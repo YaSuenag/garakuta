@@ -8,3 +8,4 @@
     * [C言語版](a123/c/)
     * [C++版](a123/cpp/)
     * [Java (JVMCI) 版](a123/java/)
+* [AVX2命令を使った配列要素の足し算](simd-sum.c)
