@@ -12,3 +12,4 @@
 * [クラスに対するCleanerの設定](class_unload/) ※要Java 9
 * [わざとSEGVを起こすJNIライブラリ](NativeSEGV/)
 * [世界のナベアツのネタをOpenCLとOpenMPでやってみる](nabeatsu)
+* [WSL 上の git を Windows で使う](wslgit)
