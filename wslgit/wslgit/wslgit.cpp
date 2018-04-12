@@ -64,7 +64,12 @@ int _tmain(int argc, TCHAR *argv[])
 	}
 
 	DWORD exit_code;
-	WslLaunchInteractive(distroName, command.c_str(), TRUE, &exit_code);
+	HRESULT result = WslLaunchInteractive(distroName, command.c_str(), TRUE, &exit_code);
+	if (result != S_OK) {
+		std::cout << "WSL error (HRESULT: " << std::hex << std::showbase << result << ")" << std::endl;
+		exit_code = result;
+	}
+
 	FreeLibrary(dll);
 	delete[] distroName;
 
