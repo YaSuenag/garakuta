@@ -9,15 +9,22 @@ static LPTSTR GetDefaultDistroName() {
 	std::basic_string<TCHAR> subkey = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Lxss");
 	DWORD value_sz;
 	LPTSTR value;
+	LONG result;
 
-	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DefaultDistribution"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
+	result = RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DefaultDistribution"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
+	if (result != ERROR_SUCCESS) {
+		return NULL;
+	}
 	value = new TCHAR[value_sz];
 	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DefaultDistribution"), RRF_RT_REG_SZ, NULL, value, &value_sz);
 	subkey += _T("\\");
 	subkey += value;
 	delete[] value;
 
-	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DistributionName"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
+	result = RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DistributionName"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
+	if (result != ERROR_SUCCESS) {
+		return NULL;
+	}
 	value = new TCHAR[value_sz];
 	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DistributionName"), RRF_RT_REG_SZ, NULL, value, &value_sz);
 
