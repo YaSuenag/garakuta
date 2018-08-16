@@ -10,8 +10,16 @@
     * FedoraかUbuntuかで [ocl/Makefile](ocl/Makefile) のリンカ設定を書き換えてください
 * [OpenMP版](omp)
     * GCC 4.2以降
+* [C++ AMP版](amp)
+    * Visual Studio 2017以降
 
 # 実行方法
 
+## OpenCL版、OpenMP版の場合
+
 [ocl](ocl) 、または [omp](omp) で `make test` を実行してください。
+
+## C++ AMP版の場合
+
+Visual Studio 2017以降で [amp/amp.sln](amp/amp.sln) を読み込んでビルドし、実行してください。
 
