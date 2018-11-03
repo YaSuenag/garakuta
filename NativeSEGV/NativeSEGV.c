@@ -6,6 +6,6 @@
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_NativeSEGV_doSEGV(JNIEnv *env, jclass cls){
-  char buf[1];
-  buf[100] = '\0';
+  char *buf = NULL;
+  *buf = '\0';
 }
