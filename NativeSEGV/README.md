@@ -5,8 +5,8 @@
 # 試してみる
 
 ```
-$ gcc -shared -fPIC -o libsegv.so -I$JAVA_HOME/include -I$JAVA_HOME/include/linux -lpthread NativeSEGV.c
-$ javac NativeSEGV.java
+$ export JAVA_HOME
+$ make
 $ java -Djava.library.path=. NativeSEGV
 ```
 
