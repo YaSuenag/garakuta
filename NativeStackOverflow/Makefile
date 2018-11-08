@@ -2,9 +2,9 @@
 .SUFFIXES: .java .class
 
 JAVAC = $(JAVA_HOME)/bin/javac
+AS = as
 CC = gcc
-CFLAGS = -g -fPIC
-CPPFLAGS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+ASFLAGS = -g -c --noexecstack
 
 JAVA_CLASSES = NativeStackOverflow.class
 OBJS = NativeOverflow.o
@@ -13,11 +13,11 @@ PROGRAM = liboverflow.so
 
 all: $(PROGRAM) $(JAVA_CLASSES)
 
-.c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+.s.o:
+	$(AS) $(ASFLAGS) $< -o $@
 
 $(PROGRAM): $(OBJS)
-	$(CC) -shared $(CFLAGS) -o $@ $^
+	$(CC) -shared -o $@ $^
 
 .java.class:
 	$(JAVAC) $<
