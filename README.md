@@ -14,3 +14,4 @@
 * [わざとネイティブレベルのスタックオーバーフローを起こすJNIライブラリ](NativeStackOverflow/)
 * [世界のナベアツのネタをOpenCLとOpenMPとC++ AMPでやってみる](nabeatsu)
 * [WSL 上の git を Windows で使う](wslgit)
+* [JNIのjobjectのOOPアドレスを取得する](oop)
