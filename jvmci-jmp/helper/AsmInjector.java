@@ -16,24 +16,25 @@ import sun.misc.*;
 
 public class AsmInjector{
 
-  private final MetaAccessProvider metaAccess;
+  private static final MetaAccessProvider metaAccess;
 
-  private final CodeCacheProvider codeCache;
+  private static final CodeCacheProvider codeCache;
 
-  private final HotSpotVMConfigAccess config;
+  private static final long DLL_LOOKUP_ADDR;;
 
   private final ByteBuffer machineCode;
 
-  private final long dllLookupAddr;
-
-  public AsmInjector(){
+  static{
     JVMCIBackend backend = JVMCI.getRuntime().getHostJVMCIBackend();
     metaAccess = backend.getMetaAccess();
     codeCache = backend.getCodeCache();
-    config = new HotSpotVMConfigAccess(HotSpotJVMCIRuntime.runtime()
-                                                          .getConfigStore());
+    HotSpotVMConfigAccess config = new HotSpotVMConfigAccess(HotSpotJVMCIRuntime.runtime()
+                                                                                .getConfigStore());
+    DLL_LOOKUP_ADDR = config.getAddress("os::dll_lookup", null);
+  }
+
+  public AsmInjector(){
     machineCode = ByteBuffer.allocate(32).order(ByteOrder.nativeOrder());
-    dllLookupAddr = config.getAddress("os::dll_lookup", null);
   }
 
   private void emitREXWOp(Register dest){
@@ -83,20 +84,21 @@ public class AsmInjector{
                                                              code,
                                                              code.length,
                                                              new Site[0],
-                                                             new Assumptions.Assumption[0],
-                                                             new ResolvedJavaMethod[]{resolvedMethod},
-                                                             new HotSpotCompiledCode.Comment[0],
-                                                             new byte[0],
-                                                             16,
-                                                             new DataPatch[0],
-                                                             false,
-                                                             16,
-                                                             null,
+                                                             null, // assumptions
+                                                             null, // methods
+                                                             null, // comments
+                                                             new byte[0], // data section
+                                                             16, // data section alignment
+                                                             new DataPatch[0], // data section patches
+                                                             true, // isImmutablePIC
+                                                             16, // total frame size
+                                                             null, // deopt rescue slot
                                                              resolvedMethod,
-                                                             -1,
+                                                             -1, // entry BCI
                                                              resolvedMethod.allocateCompileId(0),
-                                                             0L,
-                                                             false);
+                                                             0L, // compile state
+                                                             false // has unsafe access
+                                                            );
     resolvedMethod.setNotInlinableOrCompilable();
     return codeCache.setDefaultCode(resolvedMethod, nmethod);
   }
@@ -113,7 +115,7 @@ public class AsmInjector{
             Unsafe.ARRAY_BYTE_BASE_OFFSET); // 2nd argument
 
     // Jump to callee
-    emitJmp(dllLookupAddr);
+    emitJmp(DLL_LOOKUP_ADDR);
 
     // Create nmethod
     return install(resolvedMethod);
