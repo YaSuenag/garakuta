@@ -50,6 +50,7 @@
                         <argument>@${project.basedir}${file.separator}module-args.conf</argument>
                         <argument>-XX:+UnlockExperimentalVMOptions</argument>
                         <argument>-XX:+EnableJVMCI</argument>
+                        <argument>${disas.args}</argument>
                         <argument>-m</argument>
                         <argument>com.yasuenag.garakuta.jvmci.jmp/com.yasuenag.garakuta.jvmci.jmp.CFuncTest</argument>
                     </arguments>
@@ -57,5 +58,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <activation>
+                <property>
+                    <name>disas</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <disas.args>@disas-args.conf</disas.args>
+            </properties>
+        </profile>
+    </profiles>
 </project>
 

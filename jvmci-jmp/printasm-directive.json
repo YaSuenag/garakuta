@@ -1,0 +1,10 @@
+[
+  {
+    "match": "com/yasuenag/garakuta/jvmci/jmp/CFuncTest$GetPID.getPid",
+    "PrintAssembly": true
+  },
+  {
+    "match": "com/yasuenag/garakuta/jvmci/jmp/helper/FuncLoader.getFuncAddr",
+    "PrintAssembly": true
+  }
+]
