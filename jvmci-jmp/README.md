@@ -4,12 +4,15 @@
 
 JVMCIの詳細については [Java Day Tokyo 2017の資料](https://www.slideshare.net/YaSuenag/panamajvmcijit) 、および [サンプル](https://github.com/YaSuenag/jdt-2017-examples) をご覧ください。この資料との違いは、コールフレームに関する呼び出しオーバーヘッドを削減するために、JVMCIでターゲット関数へ直接ジャンプするようなコードになっているところです。
 
+glibc（libc.so）のように `RTLD_DEFAULT` でルックアップできる関数が対象です。このサンプルでは例として `getpid` をJVMCI経由でロードします。
+
 # 前提条件
 
-glibc（libc.so）のように `RTLD_DEFAULT` でルックアップできる関数が対象です。このサンプルでは例として `getpid` をJVMCI経由でロードします。
+* JDK 11以降
+* Maven
 
 # 試してみる
 
 ```
-$ make JAVA_HOME=/path/to/jdk13 test
+$ mvn package exec:exec
 ```
