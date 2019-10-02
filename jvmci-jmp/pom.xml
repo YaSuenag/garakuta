@@ -53,6 +53,7 @@
                         <argument>${disas.args}</argument>
                         <argument>-m</argument>
                         <argument>com.yasuenag.garakuta.jvmci.jmp/com.yasuenag.garakuta.jvmci.jmp.CFuncTest</argument>
+                        <argument>${project.basedir}/src/main/native/libnative.so</argument>
                     </arguments>
                 </configuration>
             </plugin>

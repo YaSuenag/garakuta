@@ -12,4 +12,13 @@ public class Util{
     return inBytes_arg;
   }
 
+  public static String generateStringFromNullTerminatedByteArray(byte[] str){
+    int nulCharIdx = 0;
+    for(nulCharIdx = 0; (nulCharIdx < str.length) && (str[nulCharIdx] != (byte)0); nulCharIdx++){
+      // Do nothing.
+    }
+
+    return new String(str, 0, nulCharIdx);
+  }
+
 }

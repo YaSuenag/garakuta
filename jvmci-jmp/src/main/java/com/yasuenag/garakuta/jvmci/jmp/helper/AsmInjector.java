@@ -20,7 +20,11 @@ public class AsmInjector{
 
   private static final CodeCacheProvider codeCache;
 
-  private static final long DLL_LOOKUP_ADDR;;
+  private static final long DLL_LOAD_ADDR;
+
+  private static final long DLL_LOOKUP_ADDR;
+
+  private static final int ARRAY_LENGTH_OFFSET;
 
   private final ByteBuffer machineCode;
 
@@ -30,11 +34,22 @@ public class AsmInjector{
     codeCache = backend.getCodeCache();
     HotSpotVMConfigAccess config = new HotSpotVMConfigAccess(HotSpotJVMCIRuntime.runtime()
                                                                                 .getConfigStore());
+
+    DLL_LOAD_ADDR = config.getAddress("os::dll_load", null);
     DLL_LOOKUP_ADDR = config.getAddress("os::dll_lookup", null);
+
+    // Offset of arrayOop length should be calculated dynamically.
+    // See arrayOopDesc::length_offset_in_bytes() in arrayOop.hpp
+    boolean useClassCOOP = config.getFlag("UseCompressedClassPointers", Boolean.class);
+    int klassGapOffset = config.getFieldOffset("oopDesc::_metadata._klass", Integer.class, "Klass*");
+    int narrowKlassSize = config.getFieldValue("CompilerToVM::Data::sizeof_narrowKlass", Integer.class, "int");
+    int arrayOopDescSize = config.getFieldValue("CompilerToVM::Data::sizeof_arrayOopDesc", Integer.class, "int");
+    ARRAY_LENGTH_OFFSET = useClassCOOP ? klassGapOffset + narrowKlassSize
+                                       : arrayOopDescSize;
   }
 
   public AsmInjector(){
-    machineCode = ByteBuffer.allocate(32).order(ByteOrder.nativeOrder());
+    machineCode = ByteBuffer.allocate(64).order(ByteOrder.nativeOrder());
   }
 
   private void emitREXWOp(Register dest){
@@ -51,14 +66,21 @@ public class AsmInjector{
                             (src.encoding & 0x7)));
   }
 
-  private void emitLEA(Register dest, Register src, int offset){
-    // LEA
+  private void emitMemOp(byte op, Register dest, Register src, int offset){
     emitREXWOp(dest);
-    machineCode.put((byte)0x8D); // LEA
+    machineCode.put(op);
     machineCode.put((byte)(                  0b10 << 6  | // REG-MEM
                            ((dest.encoding & 0x7) << 3) |
                             (src.encoding & 0x7)));
     machineCode.putInt(offset);
+  }
+
+  private void emitLEA(Register dest, Register src, int offset){
+    emitMemOp((byte)0x8D, dest, src, offset);
+  }
+
+  private void emitMovMem(Register dest, Register src, int offset){
+    emitMemOp((byte)0x8B, dest, src, offset);
   }
 
   private void emitMovRegImm64(Register dest, long imm){
@@ -101,6 +123,29 @@ public class AsmInjector{
                                                             );
     resolvedMethod.setNotInlinableOrCompilable();
     return codeCache.setDefaultCode(resolvedMethod, nmethod);
+  }
+
+  public InstalledCode injectLoadFunc(Method method){
+    HotSpotResolvedJavaMethod resolvedMethod =
+                 (HotSpotResolvedJavaMethod)metaAccess.lookupJavaMethod(method);
+    machineCode.clear();
+
+    // Shuffle arguments - JIT arg to native arg
+    emitLEA(AMD64.rdi,
+            AMD64.rsi,
+            Unsafe.ARRAY_BYTE_BASE_OFFSET); // 1st argument
+    emitLEA(AMD64.rsi,
+            AMD64.rdx,
+            Unsafe.ARRAY_BYTE_BASE_OFFSET); // 2nd argument
+    emitMovMem(AMD64.rdx,
+               AMD64.rdx,
+               ARRAY_LENGTH_OFFSET); // 3rd argument
+
+    // Jump to callee
+    emitJmp(DLL_LOAD_ADDR);
+
+    // Create nmethod
+    return install(resolvedMethod);
   }
 
   public InstalledCode injectLookupFunc(Method method){

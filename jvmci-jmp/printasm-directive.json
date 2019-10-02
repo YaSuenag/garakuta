@@ -1,6 +1,14 @@
 [
   {
+    "match": "com/yasuenag/garakuta/jvmci/jmp/CFuncTest.callNative",
+    "PrintAssembly": true
+  },
+  {
     "match": "com/yasuenag/garakuta/jvmci/jmp/CFuncTest$GetPID.getPid",
+    "PrintAssembly": true
+  },
+  {
+    "match": "com/yasuenag/garakuta/jvmci/jmp/helper/FuncLoader.loadLibrary",
     "PrintAssembly": true
   },
   {

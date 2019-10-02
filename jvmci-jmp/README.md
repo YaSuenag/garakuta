@@ -4,12 +4,19 @@
 
 JVMCIの詳細については [Java Day Tokyo 2017の資料](https://www.slideshare.net/YaSuenag/panamajvmcijit) 、および [サンプル](https://github.com/YaSuenag/jdt-2017-examples) をご覧ください。この資料との違いは、コールフレームに関する呼び出しオーバーヘッドを削減するために、JVMCIでターゲット関数へ直接ジャンプするようなコードになっているところです。
 
-glibc（libc.so）のように `RTLD_DEFAULT` でルックアップできる関数が対象です。このサンプルでは例として `getpid` をJVMCI経由でロードします。
+このサンプルでは glibc（libc.so）の提供する `getpid()` と [src/main/native](src/main/native) で生成する `libnative.so` が提供する `call_native()` の2つの呼び出しをテストできます。
 
 # 前提条件
 
 * JDK 11以降
 * Maven
+
+ネイティブコード（ [src/main/native](src/main/native) ）呼び出しテストを行う場合は、上記に加えて以下のものも必要です。
+
+* GNU make
+* GCC
+
+あらかじめ [src/main/native](src/main/native) で `make` して `libnative.so` を生成しておいてください。
 
 # 試してみる
 
