@@ -45,12 +45,13 @@
                 <configuration>
                     <executable>${java.home}${file.separator}bin${file.separator}java</executable>
                     <arguments>
-                        <argument>-classpath</argument>
-                        <classpath/>
+                        <argument>-p</argument>
+                        <modulepath/>
                         <argument>@${project.basedir}${file.separator}module-args.conf</argument>
                         <argument>-XX:+UnlockExperimentalVMOptions</argument>
                         <argument>-XX:+EnableJVMCI</argument>
-                        <argument>CFuncTest</argument>
+                        <argument>-m</argument>
+                        <argument>com.yasuenag.garakuta.jvmci.jmp/com.yasuenag.garakuta.jvmci.jmp.CFuncTest</argument>
                     </arguments>
                 </configuration>
             </plugin>

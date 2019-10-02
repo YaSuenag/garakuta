@@ -1,4 +1,6 @@
-import helper.*;
+package com.yasuenag.garakuta.jvmci.jmp;
+
+import com.yasuenag.garakuta.jvmci.jmp.helper.*;
 
 
 public class CFuncTest{

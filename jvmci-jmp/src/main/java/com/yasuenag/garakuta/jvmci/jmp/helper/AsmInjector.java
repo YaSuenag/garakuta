@@ -1,4 +1,4 @@
-package helper;
+package com.yasuenag.garakuta.jvmci.jmp.helper;
 
 import java.lang.reflect.*;
 import java.nio.*;

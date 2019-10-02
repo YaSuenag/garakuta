@@ -1,4 +1,4 @@
-package helper;
+package com.yasuenag.garakuta.jvmci.jmp.helper;
 
 
 public class FuncLoader{
