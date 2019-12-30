@@ -6,7 +6,9 @@
 
 ```
 $ export JAVA_HOME
+$ cd build
+$ cmake ..
 $ make
-$ java -Djava.library.path=. NativeSEGV
+$ java -Djava.library.path=. -jar NativeSEGV.jar
 ```
 
