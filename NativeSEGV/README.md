@@ -12,3 +12,6 @@ $ make
 $ java -Djava.library.path=. -jar NativeSEGV.jar
 ```
 
+# Windowsの場合
+
+`%JAVA_HOME%` 設定後、Visual StudioでNativeSEGVを開いてください。CMakeプロジェクトとして認識されます。Visual Studioでビルドすると `out\build` 配下にバイナリが出力されます。
