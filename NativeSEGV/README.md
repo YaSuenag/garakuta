@@ -4,12 +4,27 @@
 
 # 試してみる
 
+## ビルド
+
 ```
 $ export JAVA_HOME
 $ cd build
 $ cmake ..
 $ make
+```
+
+## 実行
+
+### JNI関数内でのSEGV
+
+```
 $ java -Djava.library.path=. -jar NativeSEGV.jar
+```
+
+### libc関数内でのSEGV
+
+```
+$ java -Djava.library.path=. -jar NativeSEGV.jar -l
 ```
 
 # Windowsの場合
