@@ -7,7 +7,7 @@ Windows Subsystem for Linux (WSL) の [関数](https://msdn.microsoft.com/en-us/
 ## 注意
 
 * WSL の Linux 環境がインストールされており、そこに Git がインストールされていることが前提です
-* `git` をフルパス指定したい場合は [wslgit/wslgit.cpp](wslgit/wslgit.cpp) の `GIT_CMD` の `#define` をそれなりのものに変えてリビルドしてください。
+* `git` をフルパス指定したい場合は [wslgit/wslgit.cpp](wslgit/wslgit.cpp) の `GIT_CMD` の定義をそれなりのものに変えてリビルドしてください。
 
 ## ビルド
 
