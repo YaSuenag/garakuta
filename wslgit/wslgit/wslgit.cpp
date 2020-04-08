@@ -1,83 +1,102 @@
 ﻿#include "stdafx.h"
 
-#define GIT_CMD _T("git")
+constexpr LPCWSTR GIT_CMD = L"git";
 
 typedef HRESULT(STDAPICALLTYPE* TWslLaunchInteractive)(PCWSTR distroName, PCWSTR command, BOOL useCurrentWorkingDirectory, DWORD *pExitCode);
 
+class TWslApi {
 
-static LPTSTR GetDefaultDistroName() {
-	std::basic_string<TCHAR> subkey = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Lxss");
+	private:
+		HINSTANCE wslapi_dll;
+		TWslLaunchInteractive WslLaunchInteractive;
+
+	public:
+		TWslApi();
+		~TWslApi() noexcept;
+
+		HRESULT LaunchInteractive(PCWSTR distroName, PCWSTR command, BOOL useCurrentWorkingDirectory, DWORD *pExitCode) noexcept;
+};
+
+TWslApi::TWslApi() {
+	wslapi_dll = LoadLibrary(_T("wslapi.dll"));
+	if (wslapi_dll == NULL) {
+		throw GetLastError();
+	}
+
+	WslLaunchInteractive = reinterpret_cast<TWslLaunchInteractive>(GetProcAddress(wslapi_dll, "WslLaunchInteractive"));
+	if (WslLaunchInteractive == NULL) {
+		throw GetLastError();
+	}
+}
+
+TWslApi::~TWslApi() {
+	FreeLibrary(wslapi_dll);
+}
+
+HRESULT TWslApi::LaunchInteractive(PCWSTR distroName, PCWSTR command, BOOL useCurrentWorkingDirectory, DWORD *pExitCode) noexcept {
+	return WslLaunchInteractive(distroName, command, useCurrentWorkingDirectory, pExitCode);
+}
+
+static LPWSTR GetRegistryValueWithMemAllocate(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD dwFlags) {
+	LPWSTR value;
 	DWORD value_sz;
-	LPTSTR value;
-	LONG result;
+	LSTATUS ret;
 
-	result = RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DefaultDistribution"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
-	if (result != ERROR_SUCCESS) {
-		return NULL;
+	ret = RegGetValue(hKey, lpSubKey, lpValue, dwFlags, NULL, NULL, &value_sz);
+	if (ret != ERROR_SUCCESS) {
+		return nullptr;
 	}
-	value = new TCHAR[value_sz];
-	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DefaultDistribution"), RRF_RT_REG_SZ, NULL, value, &value_sz);
-	subkey += _T("\\");
-	subkey += value;
-	delete[] value;
 
-	result = RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DistributionName"), RRF_RT_REG_SZ, NULL, NULL, &value_sz);
-	if (result != ERROR_SUCCESS) {
-		return NULL;
-	}
 	value = new TCHAR[value_sz];
-	RegGetValue(HKEY_CURRENT_USER, subkey.c_str(), _T("DistributionName"), RRF_RT_REG_SZ, NULL, value, &value_sz);
+	ret = RegGetValue(hKey, lpSubKey, lpValue, dwFlags, NULL, value, &value_sz);
+	if (ret != ERROR_SUCCESS) {
+		delete[] value;
+		return nullptr;
+	}
 
 	return value;
 }
 
-int _tmain(int argc, TCHAR *argv[])
+static LPWSTR GetDefaultDistroName() {
+	std::wstring subkey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Lxss";
+	LPWSTR value;
+
+	value = GetRegistryValueWithMemAllocate(HKEY_CURRENT_USER, subkey.c_str(), L"DefaultDistribution", RRF_RT_REG_SZ);
+	if (value == nullptr) {
+		return nullptr;
+	}
+
+	subkey += L'\\';
+	subkey += value;
+	delete[] value;
+
+	return GetRegistryValueWithMemAllocate(HKEY_CURRENT_USER, subkey.c_str(), L"DistributionName", RRF_RT_REG_SZ);
+}
+
+int wmain(int argc, LPWSTR argv[])
 {
-	LPTSTR distroName = GetDefaultDistroName();
-	if (distroName == NULL) {
+	TWslApi wslapi;
+
+	LPWSTR distroName = GetDefaultDistroName();
+	if (distroName == nullptr) {
 		std::cerr << "Could not get default WSL distribution name" << std::endl;
 		return -1;
-	}
-
-	HINSTANCE dll = LoadLibrary(_T("wslapi.dll"));
-	if (dll == NULL) {
-		std::cerr << "Could not load wslapi.dll" << std::endl;
-		delete[] distroName;
-		return -2;
-	}
-
-	auto WslLaunchInteractive = (TWslLaunchInteractive)GetProcAddress(dll, "WslLaunchInteractive");
-	if (WslLaunchInteractive == NULL) {
-		std::cerr << "Could not get address of WslLaunchInteractive from wsl.dll" << std::endl;
-		delete[] distroName;
-		return -3;
 	}
 
 	std::wstring command = GIT_CMD;
 	for (int idx = 1; idx < argc; idx++) {
 		command += L" \"";
-
-#ifdef _UNICODE
 		command += argv[idx];
-#else
-		int arglen = strlen(argv[idx]) + 1;
-		PWSTR wstr = new WCHAR[arglen];
-		mbstowcs(wstr, argv[idx], arglen);
-		command += wstr;
-		delete[] wstr;
-#endif
-
-		command += L"\"";
+		command += L'"';
 	}
 
 	DWORD exit_code;
-	HRESULT result = WslLaunchInteractive(distroName, command.c_str(), TRUE, &exit_code);
+	HRESULT result = wslapi.LaunchInteractive(distroName, command.c_str(), TRUE, &exit_code);
 	if (result != S_OK) {
-		std::cout << "WSL error (HRESULT: " << std::hex << std::showbase << result << ")" << std::endl;
+		std::cerr << "WSL error (HRESULT: " << std::hex << std::showbase << result << ")" << std::endl;
 		exit_code = result;
 	}
 
-	FreeLibrary(dll);
 	delete[] distroName;
 
 	return exit_code;
