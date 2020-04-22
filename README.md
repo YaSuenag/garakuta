@@ -16,3 +16,4 @@
 * [WSL 上の git を Windows で使う](wslgit)
 * [JNIのjobjectのOOPアドレスを取得する](oop)
 * [JVMCIでライブラリ関数を呼んでみる](jvmci-jmp)
+* [かんたんなJava用デッドロック検知器](java-deadlock-detector)
