@@ -65,6 +65,7 @@ graalvm                  20.1.0              GraalVM Core
 
 ```
 $ $GRAALVM_HOME/bin/javac GetPID.java
+$ $GRAALVM_HOME/bin/java GetPID
 PID: 980
 ```
 
