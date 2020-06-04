@@ -89,3 +89,7 @@ Native Symbol
 js> getpid()
 806
 ```
+
+## クラッシュさせてみる
+
+[MemSetCrash.java](examples/MemSetCrash.java) は `NULL` に対する書き込みを `memset(3)` で行おうとしてクラッシュします。コアや hs_err の確認に役立ちます。
