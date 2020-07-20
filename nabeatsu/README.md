@@ -14,6 +14,8 @@
     * GraalVM 19.3.0以降
     * 事前にllvm-toolchainをインストールしておいてください
         * `gu install llvm-toolchain`
+* [CUDA版](cuda)
+    * Visual Studio 2019以降
 
 # 実行方法
 
@@ -59,3 +61,8 @@ $ ./run.sh java [回数]
 ```
 $ ./run.sh native [回数]
 ```
+
+## CUDA版
+
+* Visual Studio 2019以降で [cuda/cuda.sln](cuda/cuda.sln) を読み込んでビルドし、実行してください。
+* GeForce GT 1030 と CUDA 11.0.2 の組み合わせで確認しています

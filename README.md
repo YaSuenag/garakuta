@@ -12,7 +12,7 @@
 * [クラスに対するCleanerの設定](class_unload/) ※要Java 9
 * [わざとSEGVを起こすJNIライブラリ](NativeSEGV/)
 * [わざとネイティブレベルのスタックオーバーフローを起こすJNIライブラリ](NativeStackOverflow/)
-* [世界のナベアツのネタをOpenCLとOpenMPとC++ AMPとGraalVMでやってみる](nabeatsu)
+* [世界のナベアツのネタをOpenCLとOpenMPとC++ AMPとGraalVMとCUDAでやってみる](nabeatsu)
 * [WSL 上の git を Windows で使う](wslgit)
 * [JNIのjobjectのOOPアドレスを取得する](oop)
 * [JVMCIでライブラリ関数を呼んでみる](jvmci-jmp)
