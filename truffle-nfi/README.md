@@ -6,7 +6,7 @@ nfiwrapper は NFI を外から Polyglot 呼び出しで使えるようにする
 
 # 前提条件
 
-GraalVM 20.1.0　JDK 11 版
+GraalVM 20.2.0　JDK 11 版
 
 * JDK 8 版 で使いたい場合はソースコードの変更（一部で `var` を使っています）と [distribution.xml](src/main/assembly/distribution.xml) でコンポーネント配置先を JDK 8 版 GraalVM のディレクトリ構造にフィットさせる必要があります
 * [pom.xml](pom.xml) の `target.graalvm.version` をターゲットとする GraalVM のバージョンに置き換えれば、そこでも使えると思います
@@ -43,7 +43,7 @@ $ $GRAALVM_HOME/bin/gu list
 ComponentId              Version             Component name      Origin
 --------------------------------------------------------------------------------
 nfiwrapper               0.1.0               Truffle NFI Wrapper
-graalvm                  20.1.0              GraalVM Core
+graalvm                  20.2.0              GraalVM Core
 ```
 
 # 試してみる
@@ -75,9 +75,9 @@ PID: 980
 
 ```
 $ $GRAALVM_HOME/bin/polyglot --shell
-GraalVM MultiLanguage Shell 20.1.0
+GraalVM MultiLanguage Shell 20.2.0
 Copyright (c) 2013-2019, Oracle and/or its affiliates
-  JavaScript version 20.1.0
+  JavaScript version 20.2.0
   TruffleNFIWrapper version 0.1.0
 Usage:
   Use Ctrl+L to switch language and Ctrl+D to exit.

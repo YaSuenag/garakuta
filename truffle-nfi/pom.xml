@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <target.graalvm.version>20.1.0</target.graalvm.version>
+        <target.graalvm.version>20.2.0</target.graalvm.version>
         <bundle.symbolic.name>nfiwrapper</bundle.symbolic.name>
     </properties>
 
