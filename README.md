@@ -17,3 +17,4 @@
 * [JNIのjobjectのOOPアドレスを取得する](oop)
 * [JVMCIでライブラリ関数を呼んでみる](jvmci-jmp)
 * [かんたんなJava用デッドロック検知器](java-deadlock-detector)
+* [PodmanでElasticsearchとKibanaを簡単に動かす](ek-deployment)

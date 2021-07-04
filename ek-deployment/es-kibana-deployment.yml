@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-kibana
+  labels:
+    app: ek
+spec:
+  selector:
+    matchLabels:
+      app: ek
+  template:
+    metadata:
+      labels:
+        app: ek
+    spec:
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:7.13.2
+        env:
+        - name: discovery.type
+          value: single-node
+        ports:
+        - containerPort: 9200
+          hostPort: 9200
+      - name: kibana
+        image: kibana:7.13.2
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: http://localhost:9200/
+        command: ["/usr/local/bin/kibana-docker"]
+        args: ["--allow-root"]
+        ports:
+        - containerPort: 5601
+          hostPort: 5601
+        startupProbe:
+          httpGet:
+          path: /
+          port: 5601
+        failureThreshold: 10
+        periodSeconds: 30
