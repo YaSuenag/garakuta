@@ -27,6 +27,15 @@ $ java -Djava.library.path=. -jar NativeSEGV.jar
 $ java -Djava.library.path=. -jar NativeSEGV.jar -l
 ```
 
+### 任意のタイミングでクラッシュしたい場合
+
+`-s` オプションを追加してください
+
+```
+$ java -Djava.library.path=. -jar NativeSEGV.jar -s
+$ java -Djava.library.path=. -jar NativeSEGV.jar -l -s
+```
+
 # Windowsの場合
 
 `%JAVA_HOME%` 設定後、Visual StudioでNativeSEGVを開いてください。CMakeプロジェクトとして認識されます。Visual Studioでビルドすると `out\build` 配下にバイナリが出力されます。
