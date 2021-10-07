@@ -70,5 +70,8 @@ $ ./run.sh native [回数]
 
 ## CUDA版
 
-* Visual Studio 2019以降で [cuda/cuda.sln](cuda/cuda.sln) を読み込んでビルドし、実行してください。
-* GeForce GT 1030 と CUDA 11.0.2 の組み合わせで確認しています
+```
+$ cd cuda/build
+$ CUDA_ROOT=$CUDA_HOME cmake ..
+$ ./nabeatsu-cl [回数]
+```

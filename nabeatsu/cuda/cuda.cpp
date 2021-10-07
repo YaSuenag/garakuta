@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 
-#include "..\..\common.h"
+#include "../common.h"
 #include "nabeatsu.cuh"
 
 int main(int argc, char *argv[])
