@@ -27,7 +27,13 @@ $ cmake ..
 $ ./nabeatsu-cl [回数]
 ```
 
-3rd Partyが提供するSDKなどを使用する場合は、それが提供するヘッダとライブラリをCMakeに認識させてください。
+3rd Partyが提供するSDKなどを使用する場合は、それが提供するヘッダとライブラリをCMakeに認識させてください。 `OpenCL_ROOT` 環境変数にパスを指定することで認識させることができます。CUDA Toolkit が提供する OpenCL の場合は以下のように `cmake` を実行します。
+
+```
+$ cmake OpenCL_ROOT=$CUDA_HOME cmake ..
+```
+
+2021 年 10 月現在、WSL 2 上の OpenCL はまだ WSL 側が対応していないようです https://github.com/microsoft/WSL/issues/6951
 
 ## OpenMP版
 
