@@ -15,7 +15,6 @@
     * 事前にllvm-toolchainをインストールしておいてください
         * `gu install llvm-toolchain`
 * [CUDA版](cuda)
-    * Visual Studio 2019以降
 
 # 実行方法
 
