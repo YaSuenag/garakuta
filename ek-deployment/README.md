@@ -21,18 +21,8 @@ $ podman play kube es-kibana-deployment.yml
 
 # Deployment 終了方法
 
-1. Pod の停止
-
-`podman pod ps` で Pod の ID を確認後、 `pod stop` で停止します
-
 ```
-$ podman pod stop <ID>
-```
-
-2. Pod の削除
-
-```
-$ podman pod prune
+$ podman play kube --down es-kibana-deployment.yml
 ```
 
 # 外からのアクセス方法
