@@ -39,9 +39,6 @@ Elasticsearch と Kibana の HTTP ポートは `hostPort` でホスト側ポー�
 
 # 注意点
 
-* 利用バージョンは Elasticsearch、Kibana ともに 7.13.2 です
-* Kibana は `--allow-root` をつけて動いています
-    * 試した環境（Fedora 34、podman-3.2.1-1）では Kibana 起動時にエラーが発生したため
-    * es-kibana-deployment.yml の中でコンテナ内の Kibana ラッパーと `--allow-root` を直接指定しています
+* 利用バージョンは Elasticsearch、Kibana ともに 8.1.1 です
 * Elasticsearch に投入したデータは永続化されません
     * 永続化ボリュームは一切指定していません
