@@ -34,7 +34,7 @@ spec:
           hostPort: 5601
         startupProbe:
           httpGet:
-          path: /
-          port: 5601
-        failureThreshold: 10
-        periodSeconds: 30
+            path: /
+            port: 5601
+          failureThreshold: 10
+          periodSeconds: 30
