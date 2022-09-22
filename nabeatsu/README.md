@@ -14,7 +14,8 @@
     * GraalVM 19.3.0以降
     * 事前にllvm-toolchainをインストールしておいてください
         * `gu install llvm-toolchain`
-* [CUDA版](cuda)
+* CUDA版
+    * [nvcc](cuda/nvcc)
 
 # 実行方法
 
@@ -69,8 +70,10 @@ $ ./run.sh native [回数]
 
 ## CUDA版
 
+### nvcc
+
 ```
-$ cd cuda/build
+$ cd cuda/nvcc/build
 $ CUDA_ROOT=$CUDA_HOME cmake ..
 $ ./nabeatsu-cl [回数]
 ```
