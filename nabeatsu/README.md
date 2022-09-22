@@ -16,6 +16,7 @@
         * `gu install llvm-toolchain`
 * CUDA版
     * [nvcc](cuda/nvcc)
+    * [Runtime Compilation](cuda/rtc)
 
 # 実行方法
 
@@ -76,4 +77,15 @@ $ ./run.sh native [回数]
 $ cd cuda/nvcc/build
 $ CUDA_ROOT=$CUDA_HOME cmake ..
 $ ./nabeatsu-cl [回数]
+```
+
+### Runtime Compilation
+
+[NVRTC](https://docs.nvidia.com/cuda/nvrtc/index.html) を使って、 [cuda/rtc/nabeatsu-rtc.c](cuda/rtc/nabeatsu-rtc.c) に `KERNEL_CODE` として定義されているカーネルコードを実行時にコンパイルして結果を得ます。
+
+```bash
+$ cd cuda/rtc
+$ export CUDA_HOME
+$ make
+$ ./nabeatsu-rtc [回数]
 ```
