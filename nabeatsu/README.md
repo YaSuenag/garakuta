@@ -17,6 +17,7 @@
 * CUDA版
     * [nvcc](cuda/nvcc)
     * [Runtime Compilation](cuda/rtc)
+    * [Runtime Compilation with Java Foreign Function & Memory API](cuda/java-rtc)
 
 # 実行方法
 
@@ -88,4 +89,14 @@ $ cd cuda/rtc
 $ export CUDA_HOME
 $ make
 $ ./nabeatsu-rtc [回数]
+```
+
+Java 版の場合は JDK 19 をインストールし、コンパイルと実行をします。以下の例は WSL 2 Ubuntu 20.04 で CUDA 11.7 で動かしたものです。
+
+```bash
+$ cd cuda/java-rtc
+$ export CUDA_HOME
+$ export JAVA_HOME
+$ mvn package
+$ $JAVA_HOME/bin/java -Djava.library.path=$CUDA_HOME/lib64:/usr/lib/wsl/lib --enable-preview -jar target/nabeatsu-rtc-0.1.0.jar [回数]
 ```
