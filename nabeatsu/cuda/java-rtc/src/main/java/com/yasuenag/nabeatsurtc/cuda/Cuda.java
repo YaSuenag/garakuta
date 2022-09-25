@@ -69,14 +69,15 @@ public class Cuda{
       hndCuDeviceGet = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    // CUdevice is int
-    var cDevice = allocator.allocate(ValueLayout.JAVA_INT);
-    int result = (int)hndCuDeviceGet.invoke(cDevice, ordinal);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuDeviceGet() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      // CUdevice is int
+      var cDevice = session.allocate(ValueLayout.JAVA_INT);
+      int result = (int)hndCuDeviceGet.invoke(cDevice, ordinal);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuDeviceGet() returns " + Integer.toString(result));
+      }
+      return cDevice.get(ValueLayout.JAVA_INT, 0);
     }
-    return cDevice.get(ValueLayout.JAVA_INT, 0);
   }
 
   public long cuCtxCreate(int flags, int device) throws Throwable{
@@ -86,14 +87,15 @@ public class Cuda{
       hndCuCtxCreate = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    // CUcontext is pointer
-    var cCtx = allocator.allocate(ValueLayout.ADDRESS);
-    int result = (int)hndCuCtxCreate.invoke(cCtx, flags, device);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuCtxCreate() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      // CUcontext is pointer
+      var cCtx = session.allocate(ValueLayout.ADDRESS);
+      int result = (int)hndCuCtxCreate.invoke(cCtx, flags, device);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuCtxCreate() returns " + Integer.toString(result));
+      }
+      return cCtx.get(ValueLayout.ADDRESS, 0).toRawLongValue();
     }
-    return cCtx.get(ValueLayout.ADDRESS, 0).toRawLongValue();
   }
 
   public long cuModuleLoadData(byte[] ptx) throws Throwable{
@@ -103,14 +105,15 @@ public class Cuda{
       hndCuModuleLoadData = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    var module = allocator.allocate(ValueLayout.ADDRESS); // CUmodule is a pointer
-    var cPtx = allocator.allocateArray(ValueLayout.JAVA_BYTE, ptx);
-    int result = (int)hndCuModuleLoadData.invoke(module, cPtx);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuModuleLoadData() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      var module = session.allocate(ValueLayout.ADDRESS); // CUmodule is a pointer
+      var cPtx = session.allocateArray(ValueLayout.JAVA_BYTE, ptx);
+      int result = (int)hndCuModuleLoadData.invoke(module, cPtx);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuModuleLoadData() returns " + Integer.toString(result));
+      }
+      return module.get(ValueLayout.ADDRESS, 0).toRawLongValue();
     }
-    return module.get(ValueLayout.ADDRESS, 0).toRawLongValue();
   }
 
   public long cuModuleGetFunction(long module, String name) throws Throwable{
@@ -120,14 +123,15 @@ public class Cuda{
       hndCuModuleGetFunction = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    var func = allocator.allocate(ValueLayout.ADDRESS); // CUfunction is a pointer;
-    var cName = allocator.allocateUtf8String(name);
-    int result = (int)hndCuModuleGetFunction.invoke(func, module, cName);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuModuleGetFunction() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      var func = session.allocate(ValueLayout.ADDRESS); // CUfunction is a pointer;
+      var cName = session.allocateUtf8String(name);
+      int result = (int)hndCuModuleGetFunction.invoke(func, module, cName);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuModuleGetFunction() returns " + Integer.toString(result));
+      }
+      return func.get(ValueLayout.ADDRESS, 0).toRawLongValue();
     }
-    return func.get(ValueLayout.ADDRESS, 0).toRawLongValue();
   }
 
   public long cuMemAlloc(long size) throws Throwable{
@@ -137,13 +141,14 @@ public class Cuda{
       hndCuMemAlloc = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    var dptr = allocator.allocate(ValueLayout.JAVA_LONG); // CUdeviceptr is an unsigned long
-    int result = (int)hndCuMemAlloc.invoke(dptr, size);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuMemAlloc() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      var dptr = session.allocate(ValueLayout.JAVA_LONG); // CUdeviceptr is an unsigned long
+      int result = (int)hndCuMemAlloc.invoke(dptr, size);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuMemAlloc() returns " + Integer.toString(result));
+      }
+      return dptr.get(ValueLayout.JAVA_LONG, 0);
     }
-    return dptr.get(ValueLayout.JAVA_LONG, 0);
   }
 
   private MemorySegment convertToArgumentArray(SegmentAllocator allocator, Object[] args){
@@ -184,12 +189,13 @@ public class Cuda{
       hndCuLaunchKernel = Linker.nativeLinker().downcallHandle(fn, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    Addressable cKernelParams = kernelParams == null ? MemoryAddress.NULL : convertToArgumentArray(allocator, kernelParams);
-    Addressable cExtra = extra == null ? MemoryAddress.NULL : convertToArgumentArray(allocator, extra);
-    int result = (int)hndCuLaunchKernel.invoke(func, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, stream, cKernelParams, cExtra);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuLaunchKernel() returns " + Integer.toString(result));
+    try(var session = MemorySession.openConfined()){
+      Addressable cKernelParams = kernelParams == null ? MemoryAddress.NULL : convertToArgumentArray(session, kernelParams);
+      Addressable cExtra = extra == null ? MemoryAddress.NULL : convertToArgumentArray(session, extra);
+      int result = (int)hndCuLaunchKernel.invoke(func, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, stream, cKernelParams, cExtra);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuLaunchKernel() returns " + Integer.toString(result));
+      }
     }
   }
 
@@ -200,33 +206,34 @@ public class Cuda{
       hndCuMemcpyDtoH = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    var allocator = SegmentAllocator.implicitAllocator();
-    ValueLayout cType = switch(target){
-      case byte[] v -> ValueLayout.JAVA_BYTE;
-      case char[] v -> ValueLayout.JAVA_CHAR;
-      case double[] v -> ValueLayout.JAVA_DOUBLE;
-      case float[] v -> ValueLayout.JAVA_FLOAT;
-      case int[] v -> ValueLayout.JAVA_INT;
-      case long[] v -> ValueLayout.JAVA_LONG;
-      case short[] v -> ValueLayout.JAVA_SHORT;
-      default -> throw new IllegalArgumentException("Unsupported type for memcpy");
-    };
-    MemorySegment cDstHost = allocator.allocateArray(cType, byteCount / cType.byteSize());
-    int result = (int)hndCuMemcpyDtoH.invoke(cDstHost, srcDevice, byteCount);
-    if(result != 0){ // CUDA_SUCCESS is 0
-      throw new RuntimeException("cuMemcpyDtoH() returns " + Integer.toString(result));
-    }
+    try(var session = MemorySession.openConfined()){
+      ValueLayout cType = switch(target){
+        case byte[] v -> ValueLayout.JAVA_BYTE;
+        case char[] v -> ValueLayout.JAVA_CHAR;
+        case double[] v -> ValueLayout.JAVA_DOUBLE;
+        case float[] v -> ValueLayout.JAVA_FLOAT;
+        case int[] v -> ValueLayout.JAVA_INT;
+        case long[] v -> ValueLayout.JAVA_LONG;
+        case short[] v -> ValueLayout.JAVA_SHORT;
+        default -> throw new IllegalArgumentException("Unsupported type for memcpy");
+      };
+      MemorySegment cDstHost = session.allocateArray(cType, byteCount / cType.byteSize());
+      int result = (int)hndCuMemcpyDtoH.invoke(cDstHost, srcDevice, byteCount);
+      if(result != 0){ // CUDA_SUCCESS is 0
+        throw new RuntimeException("cuMemcpyDtoH() returns " + Integer.toString(result));
+      }
 
-    return switch(target){
-      case byte[] v -> cDstHost.toArray(ValueLayout.JAVA_BYTE);
-      case char[] v -> cDstHost.toArray(ValueLayout.JAVA_CHAR);
-      case double[] v -> cDstHost.toArray(ValueLayout.JAVA_DOUBLE);
-      case float[] v -> cDstHost.toArray(ValueLayout.JAVA_FLOAT);
-      case int[] v -> cDstHost.toArray(ValueLayout.JAVA_INT);
-      case long[] v -> cDstHost.toArray(ValueLayout.JAVA_LONG);
-      case short[] v -> cDstHost.toArray(ValueLayout.JAVA_SHORT);
-      default -> throw new IllegalArgumentException("Should not reach here");
-    };
+      return switch(target){
+        case byte[] v -> cDstHost.toArray(ValueLayout.JAVA_BYTE);
+        case char[] v -> cDstHost.toArray(ValueLayout.JAVA_CHAR);
+        case double[] v -> cDstHost.toArray(ValueLayout.JAVA_DOUBLE);
+        case float[] v -> cDstHost.toArray(ValueLayout.JAVA_FLOAT);
+        case int[] v -> cDstHost.toArray(ValueLayout.JAVA_INT);
+        case long[] v -> cDstHost.toArray(ValueLayout.JAVA_LONG);
+        case short[] v -> cDstHost.toArray(ValueLayout.JAVA_SHORT);
+        default -> throw new IllegalArgumentException("Should not reach here");
+      };
+    }
   }
 
   public void cuMemFree(long dptr) throws Throwable{
