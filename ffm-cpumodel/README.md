@@ -34,3 +34,14 @@ WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for this modu
 
 Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz
 ```
+
+上記 WARNING を消すためには、モジュール関連設定を以下のように一通り与える必要があります。
+
+* `-p` : モジュールパスの設定
+* `--enable-native-access` : ネイティブアクセスの許可
+* `-m` : モジュールとしてのメインクラス指定
+
+```bash
+$ $JAVA_HOME/bin/java -p target/ffm-cpumodel-0.1.0.jar --enable-preview --enable-native-access=com.yasuenag.garakuta.ffm.cpuid -m com.yasuenag.garakuta.ffm.cpuid/com.yasuenag.garakuta.ffm.cpuid.Main
+Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz
+```
