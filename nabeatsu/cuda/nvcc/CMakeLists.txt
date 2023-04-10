@@ -6,4 +6,5 @@ find_package(CUDA REQUIRED)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(nabeatsu-cl cuda.cpp nabeatsu.cu ../common.cpp)
+add_executable(nabeatsu-cuda cuda.cpp nabeatsu.cu ../../common.cpp)
+set_property(TARGET nabeatsu-cuda PROPERTY CUDA_ARCHITECTURES OFF)
