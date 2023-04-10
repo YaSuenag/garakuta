@@ -5,7 +5,7 @@ Java 19 で Preview になった Foreign Function & Memory API ( [JEP 424](https
 
 # 必要なもの
 
-* JDK 19
+* JDK 20
 * Maven
 * Linux
 

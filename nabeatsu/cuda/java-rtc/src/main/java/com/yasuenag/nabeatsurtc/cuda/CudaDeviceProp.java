@@ -127,7 +127,7 @@ public class CudaDeviceProp{
                ValueLayout.JAVA_INT.withName("accessPolicyMaxWindowSize"),
                ValueLayout.JAVA_LONG.withName("reservedSharedMemPerBlock") // unsigned (size_t)
              );
-    SegmentAllocator allocator = SegmentAllocator.implicitAllocator();
+    SegmentAllocator allocator = SegmentAllocator.nativeAllocator(SegmentScope.auto());
     mem = allocator.allocate(layout);
 
     hndTotalGlobalMem = null;
@@ -149,8 +149,7 @@ public class CudaDeviceProp{
   }
 
   public String name(){
-    return mem.address()
-              .getUtf8String(layout.byteOffset(MemoryLayout.PathElement.groupElement("name")));
+    return mem.getUtf8String(layout.byteOffset(MemoryLayout.PathElement.groupElement("name")));
   }
 
   public long totalGlobalMem(){

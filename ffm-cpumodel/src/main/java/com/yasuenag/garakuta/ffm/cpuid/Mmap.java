@@ -38,7 +38,7 @@ public class Mmap{
 
   public long mmap(long addr, long length, int prot, int flags, int fd, long offset) throws Throwable{
     if(hndMmap == null){
-      MemorySegment func = sym.lookup("mmap").get();
+      MemorySegment func = sym.find("mmap").get();
       FunctionDescriptor desc = FunctionDescriptor.of(
                                   ValueLayout.ADDRESS, // return value
                                   ValueLayout.JAVA_LONG, // addr
@@ -51,19 +51,17 @@ public class Mmap{
       hndMmap = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var session = MemorySession.openConfined()){
-      MemoryAddress mem = (MemoryAddress)hndMmap.invoke(addr, length, prot, flags, fd, offset);
-      long retval = mem.toRawLongValue();
-      if(retval == -1){ // MAP_FAILED
-        throw new RuntimeException("mmap() failed!");
-      }
-      return retval;
+    MemorySegment mem = (MemorySegment)hndMmap.invoke(addr, length, prot, flags, fd, offset);
+    long retval = mem.address();
+    if(retval == -1){ // MAP_FAILED
+      throw new RuntimeException("mmap() failed!");
     }
+    return retval;
   }
 
   public int munmap(long addr, long length) throws Throwable{
     if(hndMunmap == null){
-      MemorySegment func = sym.lookup("munmap").get();
+      MemorySegment func = sym.find("munmap").get();
       FunctionDescriptor desc = FunctionDescriptor.of(
                                   ValueLayout.JAVA_INT, // return value
                                   ValueLayout.JAVA_LONG, // addr
@@ -72,13 +70,11 @@ public class Mmap{
       hndMunmap = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var session = MemorySession.openConfined()){
-      int result = (int)hndMunmap.invoke(addr, length);
-      if(result == -1){
-        throw new RuntimeException("munmap() failed!");
-      }
-      return result;
+    int result = (int)hndMunmap.invoke(addr, length);
+    if(result == -1){
+      throw new RuntimeException("munmap() failed!");
     }
+    return result;
   }
 
 }

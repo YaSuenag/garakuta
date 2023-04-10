@@ -91,12 +91,12 @@ $ make
 $ ./nabeatsu-rtc [回数]
 ```
 
-Java 版の場合は JDK 19 をインストールし、コンパイルと実行をします。以下の例は WSL 2 Ubuntu 20.04 で CUDA 11.7 で動かしたものです。
+Java 版の場合は JDK 20 をインストールし、コンパイルと実行をします。以下の例は WSL 2 Ubuntu 20.04 で CUDA 11.7 で動かしたものです。
 
 ```bash
 $ cd cuda/java-rtc
 $ export CUDA_HOME
 $ export JAVA_HOME
 $ mvn package
-$ $JAVA_HOME/bin/java -Djava.library.path=$CUDA_HOME/lib64:/usr/lib/wsl/lib --enable-preview -jar target/nabeatsu-rtc-0.1.0.jar [回数]
+$ $JAVA_HOME/bin/java -Djava.library.path=$CUDA_HOME/lib64:/usr/lib/wsl/lib --enable-preview --enable-native-access=ALL-UNNAMED -jar target/nabeatsu-rtc-0.1.1.jar [回数]
 ```

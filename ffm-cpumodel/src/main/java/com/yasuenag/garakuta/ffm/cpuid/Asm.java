@@ -24,7 +24,7 @@ public class Asm{
   private MethodHandle hndCpuid;
 
   public Asm(long addr, long size){
-    mem = MemorySegment.ofAddress(MemoryAddress.ofLong(addr), size, MemorySession.openImplicit());
+    mem = MemorySegment.ofAddress(addr, size);
     tail = 0;
 
     generateCpuidCode();
@@ -124,8 +124,8 @@ public class Asm{
   }
 
   public byte[] cpuid(int eax, int ecx) throws Throwable{
-    try(var session = MemorySession.openConfined()){
-      var result = session.allocate(16, 1);
+    try(var arena = Arena.openConfined()){
+      var result = arena.allocate(16, 1);
       hndCpuid.invoke(eax, ecx, result);
       return result.toArray(ValueLayout.JAVA_BYTE);
     }

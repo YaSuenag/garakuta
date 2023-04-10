@@ -21,7 +21,7 @@ public class CudaRuntime{
 
   public void cudaGetDeviceProperties(CudaDeviceProp prop, int device) throws Throwable{
     if(hndCudaGetDeviceProperties == null){
-      MemorySegment func = cudart.lookup("cudaGetDeviceProperties").get();
+      MemorySegment func = cudart.find("cudaGetDeviceProperties").get();
       FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
       hndCudaGetDeviceProperties = Linker.nativeLinker().downcallHandle(func, desc);
     }
