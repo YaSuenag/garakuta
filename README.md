@@ -20,3 +20,4 @@
 * [PodmanでElasticsearchとKibanaを簡単に動かす](ek-deployment)
 * [JFRのメソッドプロファイリングを時間指定で抜き出す](trjfr)
 * [Foreign Function & Memory APIでハンドアセンブルしたコードを実行する](ffm-cpumodel)
+* [libbpf からカーネルモジュールを呼び出してみる](libbpf-tty-snooper)

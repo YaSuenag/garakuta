@@ -1,0 +1,18 @@
+[package]
+name = "tty_snooper"
+version = "0.1.0"
+edition = "2021"
+authors = ["Yasumasa Suenaga <yasuenag@gmail.com>"]
+license = "GPL-2.0"
+
+[dependencies]
+libbpf-rs = "0.20"
+clap = { version = "4.3.8", features = ["derive"] }
+libc = "0.2"
+
+[build-dependencies]
+libbpf-cargo = "0.20"
+libc = "0.2"
+
+[package.metadata.libbpf]
+prog_dir = "../../bpf"
