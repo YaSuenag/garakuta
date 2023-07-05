@@ -6,6 +6,7 @@ Linux カーネルの `tty_read()` を libbpf でフックしてカーネルモ�
 ## 共通
 
 * clang
+* bpftool
 * libbpf-devel
 * kernel-devel
 * kernel-debuginfo
