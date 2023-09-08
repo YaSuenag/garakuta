@@ -1,11 +1,11 @@
 Foreign Function & Memory APIでハンドアセンブルしたコードを実行する
 ===================
 
-Java 19 で Preview になった Foreign Function & Memory API ( [JEP 424](https://openjdk.org/jeps/424) ) を使って、Java のみでハンドアセンブルしたコードを実行します。
+Java 19 で Preview になった Foreign Function & Memory API を使って、Java のみでハンドアセンブルしたコードを実行します。 [JEP 442](https://openjdk.org/jeps/442) に準拠します。
 
 # 必要なもの
 
-* JDK 20
+* JDK 21
 * Maven
 * Linux
 
