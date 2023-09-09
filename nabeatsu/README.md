@@ -91,7 +91,7 @@ $ make
 $ ./nabeatsu-rtc [回数]
 ```
 
-Java 版の場合は JDK 20 をインストールし、コンパイルと実行をします。以下の例は WSL 2 Ubuntu 20.04 で CUDA 11.7 で動かしたものです。
+Java 版の場合は JDK 21 をインストールし、コンパイルと実行をします。以下の例は WSL 2 Ubuntu 22.04 で CUDA 12.1 で動かしたものです。
 
 ```bash
 $ cd cuda/java-rtc
