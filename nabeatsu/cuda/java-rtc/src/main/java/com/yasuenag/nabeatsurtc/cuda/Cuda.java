@@ -69,7 +69,7 @@ public class Cuda{
       hndCuDeviceGet = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       // CUdevice is int
       var cDevice = arena.allocate(ValueLayout.JAVA_INT);
       int result = (int)hndCuDeviceGet.invoke(cDevice, ordinal);
@@ -87,7 +87,7 @@ public class Cuda{
       hndCuCtxCreate = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       // CUcontext is pointer
       var cCtx = arena.allocate(ValueLayout.ADDRESS);
       int result = (int)hndCuCtxCreate.invoke(cCtx, flags, device);
@@ -105,7 +105,7 @@ public class Cuda{
       hndCuModuleLoadData = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var module = arena.allocate(ValueLayout.ADDRESS); // CUmodule is a pointer
       var cPtx = arena.allocateArray(ValueLayout.JAVA_BYTE, ptx);
       int result = (int)hndCuModuleLoadData.invoke(module, cPtx);
@@ -123,7 +123,7 @@ public class Cuda{
       hndCuModuleGetFunction = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var func = arena.allocate(ValueLayout.ADDRESS); // CUfunction is a pointer;
       var cName = arena.allocateUtf8String(name);
       int result = (int)hndCuModuleGetFunction.invoke(func, module, cName);
@@ -141,7 +141,7 @@ public class Cuda{
       hndCuMemAlloc = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var dptr = arena.allocate(ValueLayout.JAVA_LONG); // CUdeviceptr is an unsigned long
       int result = (int)hndCuMemAlloc.invoke(dptr, size);
       if(result != 0){ // CUDA_SUCCESS is 0
@@ -189,7 +189,7 @@ public class Cuda{
       hndCuLaunchKernel = Linker.nativeLinker().downcallHandle(fn, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       MemorySegment cKernelParams = kernelParams == null ? MemorySegment.NULL : convertToArgumentArray(arena, kernelParams);
       MemorySegment cExtra = extra == null ? MemorySegment.NULL : convertToArgumentArray(arena, extra);
       int result = (int)hndCuLaunchKernel.invoke(func, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, stream, cKernelParams, cExtra);
@@ -206,7 +206,7 @@ public class Cuda{
       hndCuMemcpyDtoH = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       ValueLayout cType = switch(target){
         case byte[] v -> ValueLayout.JAVA_BYTE;
         case char[] v -> ValueLayout.JAVA_CHAR;

@@ -50,7 +50,7 @@ public class CudaDeviceProp{
                (new CudaUUID()).getLayout().withName("uuid"),
                MemoryLayout.sequenceLayout(8, ValueLayout.JAVA_BYTE).withName("luid"),
                ValueLayout.JAVA_INT.withName("luidDeviceNodeMask"), // unsigned
-               MemoryLayout.paddingLayout(32),
+               MemoryLayout.paddingLayout(4),
                ValueLayout.JAVA_LONG.withName("totalGlobalMem"), // unsigned (size_t)
                ValueLayout.JAVA_LONG.withName("sharedMemPerBlock"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("regPerBlock"),
@@ -90,6 +90,7 @@ public class CudaDeviceProp{
                MemoryLayout.sequenceLayout(3, ValueLayout.JAVA_INT).withName("maxSurface2DLayered"),
                ValueLayout.JAVA_INT.withName("maxSurfaceCubemap"),
                MemoryLayout.sequenceLayout(2, ValueLayout.JAVA_INT).withName("maxSurfaceCubemapLayered"),
+               MemoryLayout.paddingLayout(4),
                ValueLayout.JAVA_LONG.withName("surfaceAlignment"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("concurrentKernels"),
                ValueLayout.JAVA_INT.withName("ECCEnabled"),
@@ -127,8 +128,7 @@ public class CudaDeviceProp{
                ValueLayout.JAVA_INT.withName("accessPolicyMaxWindowSize"),
                ValueLayout.JAVA_LONG.withName("reservedSharedMemPerBlock") // unsigned (size_t)
              );
-    SegmentAllocator allocator = SegmentAllocator.nativeAllocator(SegmentScope.auto());
-    mem = allocator.allocate(layout);
+    mem = Arena.ofAuto().allocate(layout);
 
     hndTotalGlobalMem = null;
     hndSharedMemPerBlock = null;

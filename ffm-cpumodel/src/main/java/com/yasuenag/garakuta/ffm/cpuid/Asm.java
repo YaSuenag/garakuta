@@ -24,7 +24,7 @@ public class Asm{
   private MethodHandle hndCpuid;
 
   public Asm(long addr, long size){
-    mem = MemorySegment.ofAddress(addr, size);
+    mem = MemorySegment.ofAddress(addr).reinterpret(size);
     tail = 0;
 
     generateCpuidCode();
@@ -120,11 +120,11 @@ public class Asm{
                                 ValueLayout.JAVA_INT, // ecx
                                 ValueLayout.ADDRESS // memory for eax - edx
                               );
-    hndCpuid = Linker.nativeLinker().downcallHandle(memCpuid, desc);
+    hndCpuid = Linker.nativeLinker().downcallHandle(memCpuid, desc, Linker.Option.isTrivial());
   }
 
   public byte[] cpuid(int eax, int ecx) throws Throwable{
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var result = arena.allocate(16, 1);
       hndCpuid.invoke(eax, ecx, result);
       return result.toArray(ValueLayout.JAVA_BYTE);

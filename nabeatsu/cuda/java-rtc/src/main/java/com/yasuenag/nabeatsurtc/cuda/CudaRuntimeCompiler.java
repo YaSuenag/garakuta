@@ -38,7 +38,7 @@ public class CudaRuntimeCompiler{
       hndNvrtcCreateProgram = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var prog = arena.allocate(ValueLayout.ADDRESS); // nvrtcProgram is a pointer
       var cSrc = arena.allocateUtf8String(src);
       MemorySegment cName = name == null ? MemorySegment.NULL : arena.allocateUtf8String(name);
@@ -71,19 +71,20 @@ public class CudaRuntimeCompiler{
     }
 
     int numOptions = 0;
-    MemorySegment cOptions = MemorySegment.NULL;
-    if((options != null) && (options.length > 0)){
-      numOptions = options.length;
-      var allocator = SegmentAllocator.nativeAllocator(SegmentScope.auto());
-      cOptions = allocator.allocateArray(ValueLayout.ADDRESS, numOptions);
-      for(int i = 0; i < numOptions; i++){
-        ((MemorySegment)cOptions).setAtIndex(ValueLayout.ADDRESS, i, allocator.allocateUtf8String(options[i]));
+    try(var arena = Arena.ofConfined()){
+      MemorySegment cOptions = MemorySegment.NULL;
+      if((options != null) && (options.length > 0)){
+        numOptions = options.length;
+        cOptions = arena.allocateArray(ValueLayout.ADDRESS, numOptions);
+        for(int i = 0; i < numOptions; i++){
+          ((MemorySegment)cOptions).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateUtf8String(options[i]));
+        }
       }
-    }
 
-    int result = (int)hndNvrtcCompileProgram.invoke(prog, numOptions, cOptions);
-    if(result != 0){ // NVRTC_SUCCESS is 0
-      throw new RuntimeException("nvrtcCompileProgram() returns " + Integer.toString(result));
+      int result = (int)hndNvrtcCompileProgram.invoke(prog, numOptions, cOptions);
+      if(result != 0){ // NVRTC_SUCCESS is 0
+        throw new RuntimeException("nvrtcCompileProgram() returns " + Integer.toString(result));
+      }
     }
   }
 
@@ -94,7 +95,7 @@ public class CudaRuntimeCompiler{
       hndNvrtcGetPTXSize = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var cSize = arena.allocate(ValueLayout.JAVA_LONG); // size_t
       int result = (int)hndNvrtcGetPTXSize.invoke(prog, cSize);
       if(result != 0){ // NVRTC_SUCCESS is 0
@@ -112,7 +113,7 @@ public class CudaRuntimeCompiler{
     }
 
     long size = nvrtcGetPTXSize(prog);
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var mem = arena.allocate(size);
       int result = (int)hndNvrtcGetPTX.invoke(prog, mem);
       if(result != 0){ // NVRTC_SUCCESS is 0
@@ -129,7 +130,7 @@ public class CudaRuntimeCompiler{
       hndNvrtcDestroyProgram = Linker.nativeLinker().downcallHandle(func, desc);
     }
 
-    try(var arena = Arena.openConfined()){
+    try(var arena = Arena.ofConfined()){
       var cProg = arena.allocate(ValueLayout.JAVA_LONG, prog);
       int result = (int)hndNvrtcDestroyProgram.invoke(cProg);
       if(result != 0){ // NVRTC_SUCCESS is 0

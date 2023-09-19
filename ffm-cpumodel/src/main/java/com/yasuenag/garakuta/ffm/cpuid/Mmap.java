@@ -48,7 +48,7 @@ public class Mmap{
                                   ValueLayout.JAVA_INT, // fd
                                   ValueLayout.JAVA_LONG // offset
                                 );
-      hndMmap = Linker.nativeLinker().downcallHandle(func, desc);
+      hndMmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.isTrivial());
     }
 
     MemorySegment mem = (MemorySegment)hndMmap.invoke(addr, length, prot, flags, fd, offset);
@@ -67,7 +67,7 @@ public class Mmap{
                                   ValueLayout.JAVA_LONG, // addr
                                   ValueLayout.JAVA_LONG // length
                                 );
-      hndMunmap = Linker.nativeLinker().downcallHandle(func, desc);
+      hndMunmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.isTrivial());
     }
 
     int result = (int)hndMunmap.invoke(addr, length);
