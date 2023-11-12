@@ -21,3 +21,4 @@
 * [JFRのメソッドプロファイリングを時間指定で抜き出す](trjfr)
 * [Foreign Function & Memory APIでハンドアセンブルしたコードを実行する](ffm-cpumodel)
 * [libbpf からカーネルモジュールを呼び出してみる](libbpf-tty-snooper)
+* [GCC のオブジェクトファイルを FFM で実行してみる](ffm-objfile-runner)
