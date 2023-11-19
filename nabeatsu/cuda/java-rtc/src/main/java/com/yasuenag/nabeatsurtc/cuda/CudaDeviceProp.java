@@ -45,26 +45,27 @@ public class CudaDeviceProp{
   private VarHandle hndMultiProcessorCount;
 
   public CudaDeviceProp(){
+    var size_tLayout = Linker.nativeLinker().canonicalLayouts().get("size_t");
     layout = MemoryLayout.structLayout(
                MemoryLayout.sequenceLayout(256, ValueLayout.JAVA_BYTE).withName("name"),
                (new CudaUUID()).getLayout().withName("uuid"),
                MemoryLayout.sequenceLayout(8, ValueLayout.JAVA_BYTE).withName("luid"),
                ValueLayout.JAVA_INT.withName("luidDeviceNodeMask"), // unsigned
                MemoryLayout.paddingLayout(4),
-               ValueLayout.JAVA_LONG.withName("totalGlobalMem"), // unsigned (size_t)
-               ValueLayout.JAVA_LONG.withName("sharedMemPerBlock"), // unsigned (size_t)
+               size_tLayout.withName("totalGlobalMem"), // unsigned (size_t)
+               size_tLayout.withName("sharedMemPerBlock"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("regPerBlock"),
                ValueLayout.JAVA_INT.withName("wrapSize"),
-               ValueLayout.JAVA_LONG.withName("memPitch"), // unsigned (size_t)
+               size_tLayout.withName("memPitch"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("maxThreadsPerBlock"),
                MemoryLayout.sequenceLayout(3, ValueLayout.JAVA_INT).withName("maxThreadsDim"),
                MemoryLayout.sequenceLayout(3, ValueLayout.JAVA_INT).withName("maxGridSize"),
                ValueLayout.JAVA_INT.withName("clockRate"),
-               ValueLayout.JAVA_LONG.withName("totalConstMem"), // unsigned (size_t)
+               size_tLayout.withName("totalConstMem"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("major"),
                ValueLayout.JAVA_INT.withName("minor"),
-               ValueLayout.JAVA_LONG.withName("textureAlignment"), // unsigned (size_t)
-               ValueLayout.JAVA_LONG.withName("texturePitchAlignment"), // unsigned (size_t)
+               size_tLayout.withName("textureAlignment"), // unsigned (size_t)
+               size_tLayout.withName("texturePitchAlignment"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("deviceOverlap"),
                ValueLayout.JAVA_INT.withName("multiProcessorCount"),
                ValueLayout.JAVA_INT.withName("kernelExecTimeoutEnabled"),
@@ -91,7 +92,7 @@ public class CudaDeviceProp{
                ValueLayout.JAVA_INT.withName("maxSurfaceCubemap"),
                MemoryLayout.sequenceLayout(2, ValueLayout.JAVA_INT).withName("maxSurfaceCubemapLayered"),
                MemoryLayout.paddingLayout(4),
-               ValueLayout.JAVA_LONG.withName("surfaceAlignment"), // unsigned (size_t)
+               size_tLayout.withName("surfaceAlignment"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("concurrentKernels"),
                ValueLayout.JAVA_INT.withName("ECCEnabled"),
                ValueLayout.JAVA_INT.withName("pciBusID"),
@@ -108,7 +109,7 @@ public class CudaDeviceProp{
                ValueLayout.JAVA_INT.withName("streamPrioritiesSupported"),
                ValueLayout.JAVA_INT.withName("globalL1CacheSupported"),
                ValueLayout.JAVA_INT.withName("localL1CacheSupported"),
-               ValueLayout.JAVA_LONG.withName("sharedMemPerMultiprocessor"), // unsigned (size_t)
+               size_tLayout.withName("sharedMemPerMultiprocessor"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("regsPerMultiprocessor"),
                ValueLayout.JAVA_INT.withName("managedMemory"),
                ValueLayout.JAVA_INT.withName("isMultiGpuBoard"),
@@ -121,12 +122,12 @@ public class CudaDeviceProp{
                ValueLayout.JAVA_INT.withName("canUseHostPointerForRegisteredMem"),
                ValueLayout.JAVA_INT.withName("cooperativeLaunch"),
                ValueLayout.JAVA_INT.withName("cooperativeMultiDeviceLaunch"),
-               ValueLayout.JAVA_LONG.withName("sharedMemPerBlockOptin"), // unsigned (size_t)
+               size_tLayout.withName("sharedMemPerBlockOptin"), // unsigned (size_t)
                ValueLayout.JAVA_INT.withName("pageableMemoryAccessUsesHostPageTables"),
                ValueLayout.JAVA_INT.withName("directManagedMemAccessFromHost"),
                ValueLayout.JAVA_INT.withName("maxBlocksPerMultiProcessor"),
                ValueLayout.JAVA_INT.withName("accessPolicyMaxWindowSize"),
-               ValueLayout.JAVA_LONG.withName("reservedSharedMemPerBlock") // unsigned (size_t)
+               size_tLayout.withName("reservedSharedMemPerBlock") // unsigned (size_t)
              );
     mem = Arena.ofAuto().allocate(layout);
 
@@ -149,63 +150,63 @@ public class CudaDeviceProp{
   }
 
   public String name(){
-    return mem.getUtf8String(layout.byteOffset(MemoryLayout.PathElement.groupElement("name")));
+    return mem.getString(layout.byteOffset(MemoryLayout.PathElement.groupElement("name")));
   }
 
   public long totalGlobalMem(){
     if(hndTotalGlobalMem == null){
       hndTotalGlobalMem = layout.varHandle(MemoryLayout.PathElement.groupElement("totalGlobalMem"));
     }
-    return (long)hndTotalGlobalMem.get(mem);
+    return (long)hndTotalGlobalMem.get(mem, 0L);
   }
 
   public long sharedMemPerBlock(){
     if(hndSharedMemPerBlock == null){
       hndSharedMemPerBlock = layout.varHandle(MemoryLayout.PathElement.groupElement("sharedMemPerBlock"));
     }
-    return (long)hndSharedMemPerBlock.get(mem);
+    return (long)hndSharedMemPerBlock.get(mem, 0L);
   }
 
   public int wrapSize(){
     if(hndWrapSize == null){
       hndWrapSize = layout.varHandle(MemoryLayout.PathElement.groupElement("wrapSize"));
     }
-    return (int)hndWrapSize.get(mem);
+    return (int)hndWrapSize.get(mem, 0L);
   }
 
   public int maxThreadsPerBlock(){
     if(hndMaxThreadsPerBlock == null){
       hndMaxThreadsPerBlock = layout.varHandle(MemoryLayout.PathElement.groupElement("maxThreadsPerBlock"));
     }
-    return (int)hndMaxThreadsPerBlock.get(mem);
+    return (int)hndMaxThreadsPerBlock.get(mem, 0L);
   }
 
   public int major(){
     if(hndMajor == null){
       hndMajor = layout.varHandle(MemoryLayout.PathElement.groupElement("major"));
     }
-    return (int)hndMajor.get(mem);
+    return (int)hndMajor.get(mem, 0L);
   }
 
   public int minor(){
     if(hndMinor == null){
       hndMinor = layout.varHandle(MemoryLayout.PathElement.groupElement("minor"));
     }
-    return (int)hndMinor.get(mem);
+    return (int)hndMinor.get(mem, 0L);
   }
 
   public int clockRate(){
     if(hndClockRate == null){
       hndClockRate = layout.varHandle(MemoryLayout.PathElement.groupElement("clockRate"));
     }
-    return (int)hndClockRate.get(mem);
+    return (int)hndClockRate.get(mem, 0L);
   }
 
   public int multiProcessorCount(){
     if(hndMultiProcessorCount == null){
       hndMultiProcessorCount = layout.varHandle(MemoryLayout.PathElement.groupElement("multiProcessorCount"));
     }
-    return (int)hndMultiProcessorCount.get(mem);
+    return (int)hndMultiProcessorCount.get(mem, 0L);
   }
 
 }

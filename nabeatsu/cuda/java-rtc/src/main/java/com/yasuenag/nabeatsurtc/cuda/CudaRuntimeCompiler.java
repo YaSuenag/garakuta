@@ -40,17 +40,17 @@ public class CudaRuntimeCompiler{
 
     try(var arena = Arena.ofConfined()){
       var prog = arena.allocate(ValueLayout.ADDRESS); // nvrtcProgram is a pointer
-      var cSrc = arena.allocateUtf8String(src);
-      MemorySegment cName = name == null ? MemorySegment.NULL : arena.allocateUtf8String(name);
+      var cSrc = arena.allocateFrom(src);
+      MemorySegment cName = name == null ? MemorySegment.NULL : arena.allocateFrom(name);
       int numHeaders = headers == null ? 0 : headers.length;
       MemorySegment cHeaders = MemorySegment.NULL;
       MemorySegment cIncludeNames = MemorySegment.NULL;
       if(numHeaders > 0){
-        cHeaders = arena.allocateArray(ValueLayout.ADDRESS, numHeaders);
-        cIncludeNames = arena.allocateArray(ValueLayout.ADDRESS, numHeaders);
+        cHeaders = arena.allocate(ValueLayout.ADDRESS, numHeaders);
+        cIncludeNames = arena.allocate(ValueLayout.ADDRESS, numHeaders);
         for(int i = 0; i < numHeaders; i++){
-          ((MemorySegment)cHeaders).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateUtf8String(headers[i]));
-          ((MemorySegment)cIncludeNames).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateUtf8String(includeNames[i]));
+          ((MemorySegment)cHeaders).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateFrom(headers[i]));
+          ((MemorySegment)cIncludeNames).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateFrom(includeNames[i]));
         }
       }
 
@@ -75,9 +75,9 @@ public class CudaRuntimeCompiler{
       MemorySegment cOptions = MemorySegment.NULL;
       if((options != null) && (options.length > 0)){
         numOptions = options.length;
-        cOptions = arena.allocateArray(ValueLayout.ADDRESS, numOptions);
+        cOptions = arena.allocate(ValueLayout.ADDRESS, numOptions);
         for(int i = 0; i < numOptions; i++){
-          ((MemorySegment)cOptions).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateUtf8String(options[i]));
+          ((MemorySegment)cOptions).setAtIndex(ValueLayout.ADDRESS, i, arena.allocateFrom(options[i]));
         }
       }
 
@@ -96,7 +96,7 @@ public class CudaRuntimeCompiler{
     }
 
     try(var arena = Arena.ofConfined()){
-      var cSize = arena.allocate(ValueLayout.JAVA_LONG); // size_t
+      var cSize = arena.allocate(Linker.nativeLinker().canonicalLayouts().get("size_t")); // size_t
       int result = (int)hndNvrtcGetPTXSize.invoke(prog, cSize);
       if(result != 0){ // NVRTC_SUCCESS is 0
         throw new RuntimeException("nvrtcGetPTXSize() returns " + Integer.toString(result));
@@ -131,7 +131,7 @@ public class CudaRuntimeCompiler{
     }
 
     try(var arena = Arena.ofConfined()){
-      var cProg = arena.allocate(ValueLayout.JAVA_LONG, prog);
+      var cProg = arena.allocateFrom(ValueLayout.JAVA_LONG, prog);
       int result = (int)hndNvrtcDestroyProgram.invoke(cProg);
       if(result != 0){ // NVRTC_SUCCESS is 0
         throw new RuntimeException("nvrtcDestroyProgram() returns " + Integer.toString(result));
