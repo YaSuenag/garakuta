@@ -120,7 +120,7 @@ public class Asm{
                                 ValueLayout.JAVA_INT, // ecx
                                 ValueLayout.ADDRESS // memory for eax - edx
                               );
-    hndCpuid = Linker.nativeLinker().downcallHandle(memCpuid, desc, Linker.Option.isTrivial());
+    hndCpuid = Linker.nativeLinker().downcallHandle(memCpuid, desc, Linker.Option.critical(false));
   }
 
   public byte[] cpuid(int eax, int ecx) throws Throwable{

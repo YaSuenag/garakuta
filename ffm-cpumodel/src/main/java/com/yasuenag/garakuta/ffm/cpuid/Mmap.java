@@ -42,13 +42,13 @@ public class Mmap{
       FunctionDescriptor desc = FunctionDescriptor.of(
                                   ValueLayout.ADDRESS, // return value
                                   ValueLayout.JAVA_LONG, // addr
-                                  ValueLayout.JAVA_LONG, // length
+                                  Linker.nativeLinker().canonicalLayouts().get("size_t"), // length
                                   ValueLayout.JAVA_INT, // prot
                                   ValueLayout.JAVA_INT, // flags
                                   ValueLayout.JAVA_INT, // fd
                                   ValueLayout.JAVA_LONG // offset
                                 );
-      hndMmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.isTrivial());
+      hndMmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.critical(false));
     }
 
     MemorySegment mem = (MemorySegment)hndMmap.invoke(addr, length, prot, flags, fd, offset);
@@ -65,9 +65,9 @@ public class Mmap{
       FunctionDescriptor desc = FunctionDescriptor.of(
                                   ValueLayout.JAVA_INT, // return value
                                   ValueLayout.JAVA_LONG, // addr
-                                  ValueLayout.JAVA_LONG // length
+                                  Linker.nativeLinker().canonicalLayouts().get("size_t") // length
                                 );
-      hndMunmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.isTrivial());
+      hndMunmap = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.critical(false));
     }
 
     int result = (int)hndMunmap.invoke(addr, length);
