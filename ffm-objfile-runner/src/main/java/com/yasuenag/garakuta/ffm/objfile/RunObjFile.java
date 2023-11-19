@@ -19,9 +19,9 @@ public class RunObjFile{
     var mprotectSeg = linker.defaultLookup().find("mprotect").get();
     var mprotectDesc = FunctionDescriptor.of(ValueLayout.JAVA_INT,  // return val
                                              ValueLayout.ADDRESS,   // addr
-                                             ValueLayout.JAVA_LONG, // len
+                                             linker.canonicalLayouts().get("size_t"), // len
                                              ValueLayout.JAVA_INT); // prot
-    var mprotect = linker.downcallHandle(mprotectSeg, mprotectDesc, Linker.Option.isTrivial());
+    var mprotect = linker.downcallHandle(mprotectSeg, mprotectDesc, Linker.Option.critical(false));
 
     long alignmentMask = PAGE_SIZE - 1;
     long alignedSize = (seg.byteSize() + alignmentMask) & ~alignmentMask;
