@@ -5,7 +5,7 @@
 
     <groupId>com.yasuenag</groupId>
     <artifactId>nabeatsu-rtc</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>nabeatsu-rtc</name>
@@ -14,8 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>com.yasuenag.nabeatsurtc.NabeatsuRTC</mainClass>
         <imageName>${project.artifactId}-${project.version}</imageName>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
     </properties>
     
     <build>
@@ -28,7 +28,6 @@
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                     </compilerArgs>
-                    <enablePreview>true</enablePreview>
                     <debug>true</debug>
                 </configuration>
             </plugin>
@@ -41,6 +40,9 @@
                         <manifest>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>

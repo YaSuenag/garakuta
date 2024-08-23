@@ -102,12 +102,12 @@ public class Cuda{
     if(hndCuModuleLoadData == null){
       MemorySegment func = cuda.find("cuModuleLoadData").get();
       FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS);
-      hndCuModuleLoadData = Linker.nativeLinker().downcallHandle(func, desc);
+      hndCuModuleLoadData = Linker.nativeLinker().downcallHandle(func, desc, Linker.Option.critical(true));
     }
 
     try(var arena = Arena.ofConfined()){
       var module = arena.allocate(ValueLayout.ADDRESS); // CUmodule is a pointer
-      var cPtx = arena.allocateArray(ValueLayout.JAVA_BYTE, ptx);
+      var cPtx = MemorySegment.ofArray(ptx);
       int result = (int)hndCuModuleLoadData.invoke(module, cPtx);
       if(result != 0){ // CUDA_SUCCESS is 0
         throw new RuntimeException("cuModuleLoadData() returns " + Integer.toString(result));
@@ -125,7 +125,7 @@ public class Cuda{
 
     try(var arena = Arena.ofConfined()){
       var func = arena.allocate(ValueLayout.ADDRESS); // CUfunction is a pointer;
-      var cName = arena.allocateUtf8String(name);
+      var cName = arena.allocateFrom(name);
       int result = (int)hndCuModuleGetFunction.invoke(func, module, cName);
       if(result != 0){ // CUDA_SUCCESS is 0
         throw new RuntimeException("cuModuleGetFunction() returns " + Integer.toString(result));
@@ -136,9 +136,10 @@ public class Cuda{
 
   public long cuMemAlloc(long size) throws Throwable{
     if(hndCuMemAlloc == null){
+      var linker = Linker.nativeLinker();
       MemorySegment func = cuda.find("cuMemAlloc").get();
-      FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG);
-      hndCuMemAlloc = Linker.nativeLinker().downcallHandle(func, desc);
+      FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, linker.canonicalLayouts().get("size_t"));
+      hndCuMemAlloc = linker.downcallHandle(func, desc);
     }
 
     try(var arena = Arena.ofConfined()){
@@ -152,16 +153,16 @@ public class Cuda{
   }
 
   private MemorySegment convertToArgumentArray(SegmentAllocator allocator, Object[] args){
-    var dargs = allocator.allocateArray(ValueLayout.ADDRESS, args.length);
+    var dargs = allocator.allocate(ValueLayout.ADDRESS, args.length);
     for(int i = 0; i < args.length; i++){
       MemorySegment mem = switch(args[i]){
-        case Byte v -> allocator.allocate(ValueLayout.JAVA_BYTE, v.byteValue());
-        case Character v -> allocator.allocate(ValueLayout.JAVA_CHAR, v.charValue());
-        case Double v -> allocator.allocate(ValueLayout.JAVA_DOUBLE, v.doubleValue());
-        case Float v -> allocator.allocate(ValueLayout.JAVA_FLOAT, v.floatValue());
-        case Integer v -> allocator.allocate(ValueLayout.JAVA_INT, v.intValue());
-        case Long v -> allocator.allocate(ValueLayout.JAVA_LONG, v.longValue());
-        case Short v -> allocator.allocate(ValueLayout.JAVA_SHORT, v.shortValue());
+        case Byte v -> allocator.allocateFrom(ValueLayout.JAVA_BYTE, v.byteValue());
+        case Character v -> allocator.allocateFrom(ValueLayout.JAVA_CHAR, v.charValue());
+        case Double v -> allocator.allocateFrom(ValueLayout.JAVA_DOUBLE, v.doubleValue());
+        case Float v -> allocator.allocateFrom(ValueLayout.JAVA_FLOAT, v.floatValue());
+        case Integer v -> allocator.allocateFrom(ValueLayout.JAVA_INT, v.intValue());
+        case Long v -> allocator.allocateFrom(ValueLayout.JAVA_LONG, v.longValue());
+        case Short v -> allocator.allocateFrom(ValueLayout.JAVA_SHORT, v.shortValue());
         case null -> MemorySegment.NULL;
         default -> throw new IllegalArgumentException("Unsupported type for kernel argument");
       };
@@ -201,9 +202,10 @@ public class Cuda{
 
   public Object cuMemcpyDtoH(Object target, long srcDevice, long byteCount) throws Throwable{
     if(hndCuMemcpyDtoH == null){
+      var linker = Linker.nativeLinker();
       MemorySegment func = cuda.find("cuMemcpyDtoH").get();
-      FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG);
-      hndCuMemcpyDtoH = Linker.nativeLinker().downcallHandle(func, desc);
+      FunctionDescriptor desc = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, linker.canonicalLayouts().get("size_t"));
+      hndCuMemcpyDtoH = linker.downcallHandle(func, desc);
     }
 
     try(var arena = Arena.ofConfined()){
@@ -217,7 +219,7 @@ public class Cuda{
         case short[] v -> ValueLayout.JAVA_SHORT;
         default -> throw new IllegalArgumentException("Unsupported type for memcpy");
       };
-      MemorySegment cDstHost = arena.allocateArray(cType, byteCount / cType.byteSize());
+      MemorySegment cDstHost = arena.allocate(cType, byteCount / cType.byteSize());
       int result = (int)hndCuMemcpyDtoH.invoke(cDstHost, srcDevice, byteCount);
       if(result != 0){ // CUDA_SUCCESS is 0
         throw new RuntimeException("cuMemcpyDtoH() returns " + Integer.toString(result));

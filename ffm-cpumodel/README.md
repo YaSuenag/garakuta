@@ -1,11 +1,11 @@
 Foreign Function & Memory APIでハンドアセンブルしたコードを実行する
 ===================
 
-Java 19 で Preview になった Foreign Function & Memory API を使って、Java のみでハンドアセンブルしたコードを実行します。 [JEP 442](https://openjdk.org/jeps/442) に準拠します。
+Java 22 で正式導入された Foreign Function & Memory API を使って、Java のみでハンドアセンブルしたコードを実行します。
 
 # 必要なもの
 
-* JDK 21
+* JDK 22
 * Maven
 * Linux
 
@@ -26,22 +26,7 @@ $ mvn package
 
 # 動かしてみる
 
-```bash
-$ $JAVA_HOME/bin/java --enable-preview -jar ffm-cpumodel-0.1.0.jar
-WARNING: A restricted method in java.lang.foreign.Linker has been called
-WARNING: java.lang.foreign.Linker::nativeLinker has been called by the unnamed module
-WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for this module
-
-Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz
 ```
-
-上記 WARNING を消すためには、モジュール関連設定を以下のように一通り与える必要があります。
-
-* `-p` : モジュールパスの設定
-* `--enable-native-access` : ネイティブアクセスの許可
-* `-m` : モジュールとしてのメインクラス指定
-
-```bash
-$ $JAVA_HOME/bin/java -p target/ffm-cpumodel-0.1.0.jar --enable-preview --enable-native-access=com.yasuenag.garakuta.ffm.cpuid -m com.yasuenag.garakuta.ffm.cpuid/com.yasuenag.garakuta.ffm.cpuid.Main
+$ $JAVA_HOME/bin/java -jar target/ffm-cpumodel-0.1.1.jar
 Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz
 ```
