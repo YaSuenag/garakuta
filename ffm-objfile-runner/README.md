@@ -44,7 +44,7 @@ $ mvn exec:exec@run
 
 # カラクリ
 
-`gcc -c` で得られたオブジェクトファイルを [FileChannel::map](https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/nio/channels/FileChannel.html#map(java.nio.channels.FileChannel.MapMode,long,long)) で [MappedByteBuffer](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/MappedByteBuffer.html) にマップします。そこから `MemorySegment` を `ofBuffer()` で取得します。
+`gcc -c` で得られたオブジェクトファイルを [FileChannel::map](https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/nio/channels/FileChannel.html#map(java.nio.channels.FileChannel.MapMode,long,long)) で [MappedByteBuffer](https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/nio/MappedByteBuffer.html) にマップします。そこから `MemorySegment` を `ofBuffer()` で取得します。
 
 `FileChannel::map` には `MemorySegment` を返すものも存在しますが、ELF の解析に使う [JElf](https://github.com/fornwall/jelf) v0.9.0 の [ElfFile](https://javadoc.io/doc/net.fornwall/jelf/latest/net/fornwall/jelf/ElfFile.html) が `ByteBuffer` 系は `MappedByteBuffer` しか受け付けないため、これを経由して `MemorySegment` を取得するようにします。
 
