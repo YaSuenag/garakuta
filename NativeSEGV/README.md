@@ -49,3 +49,12 @@ $ cd container
 $ buildah bud --layers -t javacrash:jdk17
 $ podman run -it --rm javacrash:jdk17
 ```
+
+# FFM での SEGV
+
+Java 22 から Foreign Function & Memory API が導入されました。 `NULL` を表現する [MemorySegment.NULL](https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/lang/foreign/MemorySegment.html#NULL) に書き込みオペレーションを実行したときに SEGV を起こします。
+
+```
+cd ffm
+java SegvInFFM.java
+```
