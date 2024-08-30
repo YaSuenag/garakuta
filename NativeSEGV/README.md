@@ -58,3 +58,11 @@ Java 22 から Foreign Function & Memory API が導入されました。 `NULL` 
 cd ffm
 java SegvInFFM.java
 ```
+
+upcall 内での SEGV を確認するには [upcall](ffm/upcall) を実行します。
+
+```
+cd ffm/upcall
+mvn package
+mvn exec:java
+```
