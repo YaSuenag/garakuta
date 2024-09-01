@@ -22,3 +22,4 @@
 * [Foreign Function & Memory APIでハンドアセンブルしたコードを実行する](ffm-cpumodel)
 * [libbpf からカーネルモジュールを呼び出してみる](libbpf-tty-snooper)
 * [GCC のオブジェクトファイルを FFM で実行してみる](ffm-objfile-runner)
+* [乱数ジェネレータ性能比較 in Java](randbench)
