@@ -66,3 +66,6 @@ cd ffm/upcall
 mvn package
 mvn exec:java
 ```
+
+> [!TIP]
+> クラッシュしたときのコアイメージなど `jhsdb jstack` でコールスタックを取得しようとすると、動的生成される Upcall 用スタブコードから下のコールスタックを取得できない可能性があります。この問題は [JDK-8339307](https://bugs.openjdk.org/browse/JDK-8339307) で修正されており、Java 24 から正式に織り込まれる予定です。
