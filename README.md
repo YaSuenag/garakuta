@@ -24,4 +24,4 @@
 * [GCC のオブジェクトファイルを FFM で実行してみる](ffm-objfile-runner)
 * [乱数ジェネレータ性能比較 in Java](randbench)
 * [動的生成コード（機械語）を Java から hsdis でディスアセンブルする](disas-with-hsdis)
-* [FFM で仮想メソッドに upcall する](ffm-upcall-to-virtualmethod])
+* [FFM で仮想メソッドに upcall する](ffm-upcall-to-virtualmethod)
