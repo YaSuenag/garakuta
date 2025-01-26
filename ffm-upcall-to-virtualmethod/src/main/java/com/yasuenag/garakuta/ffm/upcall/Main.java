@@ -14,6 +14,8 @@ public class Main{
   private final MethodHandle MH_callbackToUse;
   private final MemorySegment ptrCallback;
 
+  private final String label;
+
   static{
     try{
       System.loadLibrary("native");
@@ -33,18 +35,20 @@ public class Main{
     }
   }
 
-  public Main(){
+  public Main(String label){
     MH_callbackToUse = MethodHandles.insertArguments(MH_callback, 0, this);
     ptrCallback = Linker.nativeLinker()
                         .upcallStub(MH_callbackToUse, callbackDesc, Arena.global());
+
+    this.label = label;
   }
 
   public void callback(int arg){
-    System.out.println("from callback: " + arg);
+    System.out.println("from callback (" + label + "): " + arg);
   }
 
   public static void main(String[] args) throws Throwable{
-    var inst = new Main();
+    var inst = new Main("upcall test");
 
     nativeFunc.invoke(100, inst.ptrCallback);
   }
