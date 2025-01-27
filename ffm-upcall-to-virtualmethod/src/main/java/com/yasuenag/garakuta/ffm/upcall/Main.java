@@ -36,7 +36,7 @@ public class Main{
   }
 
   public Main(String label){
-    MH_callbackToUse = MethodHandles.insertArguments(MH_callback, 0, this);
+    MH_callbackToUse = MH_callback.bindTo(this);
     ptrCallback = Linker.nativeLinker()
                         .upcallStub(MH_callbackToUse, callbackDesc, Arena.global());
 
