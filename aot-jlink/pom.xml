@@ -1,0 +1,130 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.yasuenag</groupId>
+    <artifactId>aotjlink</artifactId>
+    <packaging>jlink</packaging>
+    <version>1.0.0</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>24</maven.compiler.target>
+        <launcher>aotjlink</launcher>
+        <mainModuleAndClass>aotjlink/com.yasuenag.garakuta.aotjlink.Main</mainModuleAndClass>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jlink-plugin</artifactId>
+                <version>3.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <launcher>${launcher}=${mainModuleAndClass}</launcher>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>aot</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>aot-record</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>${project.build.directory}/maven-jlink/default/bin</workingDirectory>
+                                    <executable>./${launcher}</executable>
+                                    <environmentVariables>
+                                        <_JAVA_OPTIONS>-XX:AOTMode=record -XX:AOTConfiguration=${project.build.directory}/app.aotconf</_JAVA_OPTIONS>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>aot-create</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>${project.build.directory}/maven-jlink/default/bin</workingDirectory>
+                                    <executable>./java</executable>
+                                    <arguments>
+                                        <argument>-XX:AOTMode=create</argument>
+                                        <argument>-XX:AOTConfiguration=${project.build.directory}/app.aotconf</argument>
+                                        <argument>-XX:AOTCache=app.aot</argument>
+                                        <argument>-m</argument>
+                                        <argument>${mainModuleAndClass}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant</artifactId>
+                                <version>1.10.15</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>integrate-aot-to-launcher</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <replace file="${project.build.directory}/maven-jlink/default/bin/${launcher}"
+                                                 token="JLINK_VM_OPTIONS="
+                                                 value=""/>
+                                        <replaceregexp file="${project.build.directory}/maven-jlink/default/bin/${launcher}"
+                                                       match="^DIR=.*$"
+                                                       replace="\0${line.separator}JLINK_VM_OPTIONS=&quot;-XX:AOTCache=$DIR${file.separator}app.aot&quot;"
+                                                       byline="true"/>
+                                        <exec executable="chmod" failonerror="false" osfamily="unix">
+                                            <arg value="a+x"/>
+                                            <arg value="${project.build.directory}/maven-jlink/default/bin/${launcher}"/>
+                                        </exec>
+                                        <replaceregexp file="${project.build.directory}/maven-jlink/default/bin/${launcher}.bat"
+                                                       match="^set JLINK_VM_OPTIONS=$"
+                                                       replace=""
+                                                       byline="true"
+                                                       failonerror="false"/>
+                                        <replaceregexp file="${project.build.directory}/maven-jlink/default/bin/${launcher}.bat"
+                                                       match="^set DIR=.*$"
+                                                       replace="\0${line.separator}set JLINK_VM_OPTIONS=-XX:AOTCache=%DIR%${file.separator}app.aot"
+                                                       byline="true"
+                                                       failonerror="false"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
