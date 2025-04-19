@@ -76,7 +76,7 @@ $ ./run.sh native [回数]
 
 ```
 $ cd cuda/nvcc/build
-$ CUDA_ROOT=$CUDA_HOME cmake ..
+$ cmake -DCMAKE_PREFIX_PATH=$CUDA_HOME ..
 $ ./nabeatsu-cl [回数]
 ```
 
