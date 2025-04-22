@@ -1,11 +1,11 @@
 #define CL_HPP_ENABLE_EXCEPTIONS
-#define CL_HPP_TARGET_OPENCL_VERSION 200
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 
 #include "../common.h"
 
@@ -32,7 +32,7 @@ void CLUtil::setup_cl_platform(){
 
   bool found = false;
   for(auto &p : platforms){
-    if(p.getInfo<CL_PLATFORM_VERSION>().find("OpenCL 2.") != std::string::npos){
+    if(p.getInfo<CL_PLATFORM_VERSION>().find("OpenCL 3.") != std::string::npos){
       std::string platform_name = p.getInfo<CL_PLATFORM_NAME>();
       std::cout << p.getInfo<CL_PLATFORM_NAME>() 
                 << " (" << p.getInfo<CL_PLATFORM_VERSION>() << ")"
@@ -50,7 +50,7 @@ void CLUtil::setup_cl_platform(){
   }
 
   if(!found){
-    std::cerr << "Could not find OpenCL 2.0 platform." << std::endl;
+    std::cerr << "Could not find OpenCL 3.0 platform." << std::endl;
     _Exit(3);
   }
 
@@ -66,7 +66,7 @@ void CLUtil::setup_cl_program(const char *fname){
                                    std::istreambuf_iterator<char>());
   cl::Program prog(cl_src);
   try{
-    prog.build("-cl-std=CL2.0");
+    prog.build("-cl-std=CL3.0");
   }
   catch(cl::BuildError err){
     std::cerr << "Could not build CL source!" << std::endl;
