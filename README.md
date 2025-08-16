@@ -26,3 +26,4 @@
 * [動的生成コード（機械語）を Java から hsdis でディスアセンブルする](disas-with-hsdis)
 * [FFM で仮想メソッドに upcall する](ffm-upcall-to-virtualmethod)
 * [jlink したアプリに AOT を設定する](aot-jlink)
+* [ハイブリッドアーキテクチャの CPU コアをチェックする](check-hybrid-cores)
