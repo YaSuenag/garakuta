@@ -32,7 +32,7 @@ cl hy-core-check.c
 ### Windows
 
 ```
-hy-core-check.c
+hy-core-check.exe
 ```
 
 ## 出力例
@@ -44,6 +44,7 @@ Linux でも Windows でも以下のような出力になります。
 ```
 Num of logical cores: 14
 Hybrid: 1
+HT: 1
 Max leaf: 0x23
 Core 0: type = 0x40, native model id = 0x2
 Core 1: type = 0x40, native model id = 0x2
@@ -66,12 +67,14 @@ Core 13: type = 0x20, native model id = 0x2
 ```
 Num of logical cores: 14
 Hybrid: 0
+HT: 1
 Max leaf: 0x1C
 ```
 
 # カラクリ
 
 * `Hybrid` で表示しているのは Leaf 07h の `EDX` の Bit 15 にある Hybrid フラグです
+* `HT` で表示しているのは Leaf 01h の `EDX` の Bit 28 にある HTT フラグです
 * コア情報は Leaf 1A の `EAX` を整形して出しています
     * Leaf 1A は `CPUID` を発行した論理プロセッサの情報を出すため、Windows では [SetThreadAffinityMask](https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/nf-winbase-setthreadaffinitymask) 、Linux では [sched_setaffinity](https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html) を使って実行コアを縛ってから `CPUID` を発行しています
 

@@ -57,6 +57,24 @@ int is_hybrid(){
   return (edx >> 15) & 1;
 }
 
+int is_ht(){
+  int edx;
+
+#ifdef _WIN32
+  int regs[4];
+  __cpuid(regs, 0x01);
+  edx = regs[3];
+#else
+  asm volatile(
+    "movl $0x01, %%eax\n"
+    "cpuid"
+    : "=d"(edx) : : "eax", "ebx", "ecx"
+  );
+#endif
+
+  return (edx >> 28) & 1;
+}
+
 void show_cpu_info(int cpus, int id){
   int eax;
 
@@ -100,6 +118,8 @@ int main(){
 
   int hybrid = is_hybrid();
   printf("Hybrid: %d\n", hybrid);
+  int ht = is_ht();
+  printf("HT: %d\n", ht);
 
   int maxleaf = get_max_leaf();
   printf("Max leaf: 0x%X\n", maxleaf);
