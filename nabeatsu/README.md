@@ -36,7 +36,9 @@ $ ./build/nabeatsu-cl [回数]
 $ OpenCL_ROOT=$CUDA_HOME cmake ..
 ```
 
-2021 年 10 月現在、WSL 2 上の OpenCL はまだ WSL 側が対応していないようです https://github.com/microsoft/WSL/issues/6951
+> [!TIP]
+> 2025 年 8 月現在、WSL 2 上の OpenCL はまだ WSL 側が対応していないようです https://github.com/microsoft/WSL/issues/6951  
+> ただし、Intel Graphics の場合は WSL 2 で `nabeatsu-cl` をビルド／実行することが可能です。Fedora の場合は `intel-opencl`、`ocl-icd-devel` が必要です。
 
 ## OpenMP版
 
