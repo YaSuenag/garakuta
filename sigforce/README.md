@@ -71,15 +71,15 @@ jcmd -J-javaagent:/path/to/sigforce-0.1.0.jar ...
 ## ネイティブエージェントライブラリの場合
 
 1. [ClassFileLoadHook](https://docs.oracle.com/javase/jp/24/docs/specs/jvmti.html#ClassFileLoadHook) JVMTI イベントで `sun.tools.attach.VirtualMachineImpl` のロードを検知し、このクラスの（元々の）バイナリデータを取得する
-2. `libsigforce.so` に埋め込んだ [com.yasuenag.garakuta.sigforce.Transformer](src/main/java/com/yasuenag/garakuta/sigforce/Transformer) を [DefineClass](https://docs.oracle.com/javase/jp/24/docs/specs/jni/functions.html#defineclass) JNI 関数でロードし、このクラスが提供する `transform` メソッドを呼び出す
+2. `libsigforce.so` に埋め込んだ [com.yasuenag.garakuta.sigforce.Transformer.java](src/main/java/com/yasuenag/garakuta/sigforce/Transformer) を [DefineClass](https://docs.oracle.com/javase/jp/24/docs/specs/jni/functions.html#defineclass) JNI 関数でロードし、このクラスが提供する `transform` メソッドを呼び出す
 3. [ClassFile API](https://docs.oracle.com/javase/jp/24/vm/jvm-apis.html#GUID-CA6D8301-F38A-46BE-90B8-903EBDB449F3) を使って `VirtualMachineImpl::checkCatchesAndSendQuitTo` の内容を、ただ `VirtualMachineImpl::sendQuitTo` （アタッチ対象プロセスに `SIGQUIT` を発行する JNI 実装）を呼び出し、 `true` を返すだけのバイトコードに置換する
 4. `ClassFileLoadHook` の `new_class_data` 引数に 3. で生成したバイトコードを反映したバイナリデータを設定し、JVM にロードさせる
 
 ## Java エージェントの場合
 
 1. [com.yasuenag.garakuta.sigforce.Agent](src/main/java/com/yasuenag/garakuta/sigforce/Agent.java) の `premain()` の引数に渡される `Instrumentation` の [addTransformer](https://docs.oracle.com/javase/jp/24/docs/api/java.instrument/java/lang/instrument/Instrumentation.html#addTransformer(java.lang.instrument.ClassFileTransformer)) に `com.yasuenag.garakuta.sigforce.Transformer::transform` を呼び出すよう、トランスフォーマ（実装クラスは `com.yasuenag.garakuta.sigforce.Agent` ）を登録する
-2. 1. のトランスフォーマが `sun.tools.attach.VirtualMachineImpl` に対して呼び出されると、 [ClassFileTransformer::transform](https://docs.oracle.com/javase/jp/24/docs/api/java.instrument/java/lang/instrument/ClassFileTransformer.html#transform(java.lang.ClassLoader,java.lang.String,java.lang.Class,java.security.ProtectionDomain,byte%5B%5D)) が `com.yasuenag.garakuta.sigforce.Transformer` を呼び出し、 `VirtualMachineImpl::checkCatchesAndSendQuitTo` の内容を、ただ `VirtualMachineImpl::sendQuitTo` （アタッチ対象プロセスに `SIGQUIT` を発行する JNI 実装）を呼び出し、 `true` を返すだけのバイトコードに置換する
-3. 変換したバイトコードを `ClassFileTransformer::transform` の戻り値に設定し、変換後クラスとして VM にロードさせる
+2. 1.のトランスフォーマが `sun.tools.attach.VirtualMachineImpl` に対して呼び出されると、 [ClassFileTransformer::transform](https://docs.oracle.com/javase/jp/24/docs/api/java.instrument/java/lang/instrument/ClassFileTransformer.html#transform(java.lang.ClassLoader,java.lang.String,java.lang.Class,java.security.ProtectionDomain,byte%5B%5D)) が `com.yasuenag.garakuta.sigforce.Transformer` を呼び出し、 `VirtualMachineImpl::checkCatchesAndSendQuitTo` の内容を、ただ `VirtualMachineImpl::sendQuitTo` （アタッチ対象プロセスに `SIGQUIT` を発行する JNI 実装）を呼び出し、 `true` を返すだけのバイトコードに置換する
+3. 変換したバイトコードを `ClassFileTransformer::transform` の戻り値に設定し、変換後クラスとして JVM にロードさせる
 
 # 免責事項
 
