@@ -5,9 +5,9 @@
 #include <jvmti.h>
 
 
-extern const char _binary_com_yasuenag_garakuta_sigforce_Transformer_class_start[];
-extern const char _binary_com_yasuenag_garakuta_sigforce_Transformer_class_end[];
-static const jsize transformer_len = _binary_com_yasuenag_garakuta_sigforce_Transformer_class_end - _binary_com_yasuenag_garakuta_sigforce_Transformer_class_start;
+extern const char _binary_Transformer_class_start[];
+extern const char _binary_Transformer_class_end[];
+static const jsize transformer_len = _binary_Transformer_class_end - _binary_Transformer_class_start;
 
 static bool replaced = false;
 
@@ -25,7 +25,7 @@ void JNICALL OnClassFileLoadHook(jvmtiEnv *jvmti,
   if(!replaced && strcmp(name, "sun/tools/attach/VirtualMachineImpl") == 0){
     jclass transformer_cls = env->DefineClass("com/yasuenag/garakuta/sigforce/Transformer",
                                               nullptr,
-                                              reinterpret_cast<const jbyte *>(_binary_com_yasuenag_garakuta_sigforce_Transformer_class_start),
+                                              reinterpret_cast<const jbyte *>(_binary_Transformer_class_start),
                                               transformer_len);
     if(transformer_cls == nullptr){
       // Maybe exception thrown due to older JDK (JDK 23 or earlier).
