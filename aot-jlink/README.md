@@ -6,19 +6,19 @@ Java 24 から導入された [JEP 483: Ahead-of-Time Class Loading & Linking](h
 
 # 必要なもの
 
-* Java 24
+* Java 25
 * Maven
 
 # ビルド
 
-`aot` プロファイルを有効にすると AOT キャッシュを生成し、ランチャースクリプト（ Unix 系 OS なら `/bin/aotjlink` 、 Windows ならそれに加えて `bin\\aotjlink.bat` ）に `-XX:AOTCache` を設定します。
+`aot.enabled` プロパティを `true` に設定すると AOT キャッシュを生成し、ランチャースクリプト（ Unix 系 OS なら `bin/aotjlink` 、 Windows ならそれに加えて `bin\\aotjlink.bat` ）に `-XX:AOTCache` を設定します。
 
 ```bash
-mvn -Paot package
+mvn -Daot.enabled=true package
 ```
 
 > [!NOTE]
-> `-Paot` を削除すると AOT キャッシュを作らない、普通のカスタムランタイムが生成されます。
+> `-Daot.enabled=true` を削除すると AOT キャッシュを作らない、普通のカスタムランタイムが生成されます。
 
 # カラクリ
 
@@ -32,21 +32,15 @@ mvn -Paot package
 
 2.以降は `aot` プロファイルが有効な時に実行されます。
 
-## 2. クラスロードの記録
+## 2. AOT キャッシュの作成
 
-`-XX:AOTMode=record` を実行します。
+`-XX:AOTCacheOutput=app.aot` をつけてアプリを実行します。
 
-アプリケーションはランチャー（ `aotjlink` ）経由で実行します。そのため `-XX:AOTMode=record -XX:AOTConfiguration=${project.build.directory}/app.aotconf` を `_JAVA_OPTIONS` 環境変数に設定することで HotSpot に AOT 関連設定を暗黙的に読み込ませます。
-
-## 3. AOT キャッシュの作成
-
-`-XX:AOTMode=create` を実行します。
-
-AOT キャッシュの作成にアプリ実行は必要ないため、ランチャーではなく直接カスタムランタイム内の `java` コマンドを実行します。これはアプリケーションのモジュールがカスタムランタイムの `modules` に含まれるためです。 `java -XX:AOTMode=create -XX:AOTConfiguration=${project.build.directory}/app.aotconf -XX:AOTCache=app.aot -m ${mainModuleAndClass}` を実行します。
+ランチャーではなく直接カスタムランタイム内の `java` コマンドを実行します。これはアプリケーションのモジュールがカスタムランタイムの `modules` に含まれるためです。 `java -XX:AOTCacheOutput=app.aot -m ${mainModuleAndClass}` を実行することで、このアプリ用の AOT キャッシュを生成します。
 
 この実行は [exec-maven-plugin](https://www.mojohaus.org/exec-maven-plugin/) 経由で行いますが、 `<workingDirectory>` をカスタムランタイムの `bin` に設定しているため、AOT キャッシュはこのディレクトリに出力されます。
 
-## 4. ランチャースクリプトの変更
+## 3. ランチャースクリプトの変更
 
 AOT キャッシュを有効にして実行するためには `-XX:AOTCache=app.aot` を実行時に付与しなければなりません。ただし、アプリケーションの実行はランチャー経由になるため、ランチャー内で `-XX:AOTCache` を指定する必要があります。
 
