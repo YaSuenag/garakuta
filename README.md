@@ -28,3 +28,4 @@
 * [jlink したアプリに AOT を設定する](aot-jlink)
 * [ハイブリッドアーキテクチャの CPU コアをチェックする](check-hybrid-cores)
 * [Attach API のシグナルハンドラチェックをキャンセルする JVMTI エージェント](sigforce)
+* [プロセッサコア、バス、TSC のクロックを調べてみる](freq)
