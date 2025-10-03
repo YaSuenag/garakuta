@@ -76,14 +76,18 @@ int is_ht(){
 }
 
 void show_cpu_info(int cpus, int id){
-  int eax;
+  int core_info, logical_processors, cores;
 
 #ifdef _WIN32
   HANDLE hThread = GetCurrentThread();
   SetThreadAffinityMask(hThread, 1 << id);
   int regs[4];
   __cpuidex(regs, 0x1A, 0);
-  eax = regs[0];
+  core_info = regs[0];
+  __cpuidex(regs, 0x0B, 0);
+  logical_processors = regs[1];
+  __cpuidex(regs, 0x0B, 1);
+  cores = regs[1];
 #else
   cpu_set_t *cpuset = CPU_ALLOC(cpus);
   CPU_ZERO(cpuset);
@@ -94,20 +98,34 @@ void show_cpu_info(int cpus, int id){
     "movl $0x1A, %%eax\n"
     "xorl %%ecx, %%ecx\n"
     "cpuid"
-    : "=a"(eax) : : "ebx", "ecx", "edx"
+    : "=a"(core_info) : : "ebx", "ecx", "edx"
+  );
+
+  asm volatile(
+    "movl $0x0B, %%eax\n"
+    "xorl %%ecx, %%ecx\n"
+    "cpuid\n"
+    "movl %%ebx, %0\n"
+    "movl $0x0B, %%eax\n"
+    "movl $1, %%ecx\n"
+    "cpuid\n"
+    "movl %%ebx, %1\n"
+    : "=r"(logical_processors), "=r"(cores) : : "eax", "ebx", "ecx", "edx"
   );
 
   CPU_FREE(cpuset);
 #endif
 
   printf("Core %d: ", id);
-  if(eax == 0){
+  if(core_info == 0){
     printf("<not available>\n", id);
   }
   else{
-    int core_type = eax >> 24;
-    int native_model_id = eax & 0xFFFFFF;
-    printf("type = 0x%x, native model id = 0x%x\n", core_type, native_model_id);
+    int core_type = core_info >> 24;
+    int native_model_id = core_info & 0xFFFFFF;
+    logical_processors &= 0xFFFF;
+    cores &= 0xFFFF;
+    printf("logical processor domain = %d, core domain = %d, type = 0x%x, native model id = 0x%x\n", logical_processors, cores, core_type, native_model_id);
   }
 
 }

@@ -1,7 +1,7 @@
 ハイブリッドアーキテクチャの CPU コアをチェックする
 ===
 
-Alder Lake 以降の Intel Core プロセッサに採用されたハイブリッドアーキテクチャ（P コアと E コア）のコア ID 割り当てをチェックします。
+Alder Lake 以降の Intel Core プロセッサに採用されたハイブリッドアーキテクチャ（P コアと E コア）のコア ID 割り当てをチェックします。ついでに CPU トポロジについても確認します。
 
 # ビルド
 
@@ -46,20 +46,20 @@ Num of logical cores: 14
 Hybrid: 1
 HT: 1
 Max leaf: 0x23
-Core 0: type = 0x40, native model id = 0x2
-Core 1: type = 0x40, native model id = 0x2
-Core 2: type = 0x20, native model id = 0x2
-Core 3: type = 0x20, native model id = 0x2
-Core 4: type = 0x20, native model id = 0x2
-Core 5: type = 0x20, native model id = 0x2
-Core 6: type = 0x20, native model id = 0x2
-Core 7: type = 0x20, native model id = 0x2
-Core 8: type = 0x20, native model id = 0x2
-Core 9: type = 0x20, native model id = 0x2
-Core 10: type = 0x40, native model id = 0x2
-Core 11: type = 0x40, native model id = 0x2
-Core 12: type = 0x20, native model id = 0x2
-Core 13: type = 0x20, native model id = 0x2
+Core 0: logical processor domain = 2, core domain = 14, type = 0x40, native model id = 0x2
+Core 1: logical processor domain = 2, core domain = 14, type = 0x40, native model id = 0x2
+Core 2: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 3: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 4: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 5: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 6: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 7: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 8: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 9: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 10: logical processor domain = 2, core domain = 14, type = 0x40, native model id = 0x2
+Core 11: logical processor domain = 2, core domain = 14, type = 0x40, native model id = 0x2
+Core 12: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
+Core 13: logical processor domain = 2, core domain = 14, type = 0x20, native model id = 0x2
 ```
 
 ### ハイブリッドアーキテクチャでない場合
@@ -75,8 +75,12 @@ Max leaf: 0x1C
 
 * `Hybrid` で表示しているのは Leaf 07h の `EDX` の Bit 15 にある Hybrid フラグです
 * `HT` で表示しているのは Leaf 01h の `EDX` の Bit 28 にある HTT フラグです
-* コア情報は Leaf 1A の `EAX` を整形して出しています
-    * Leaf 1A は `CPUID` を発行した論理プロセッサの情報を出すため、Windows では [SetThreadAffinityMask](https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/nf-winbase-setthreadaffinitymask) 、Linux では [sched_setaffinity](https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html) を使って実行コアを縛ってから `CPUID` を発行しています
+* 各項目は以下の値を整形して出しています
+    * logical processor domain: Leaf 0Bh の `EBX` の Bit 15:0 （コアあたりの論理プロセッサ数）
+    * core domain: Leaf 0Bh の `EBX` の Bit 15:0 （パッケージあたりの論理プロセッサ数）
+    * tyoe: Leaf 1A の `EAX` の Bit 31:24 （コアタイプ）
+    * native model id: Leaf 1A の `EAX` の Bit 23:0 （ネイティブモデル ID）
+* Leaf 1A は `CPUID` を発行した論理プロセッサの情報を出すため、Windows では [SetThreadAffinityMask](https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/nf-winbase-setthreadaffinitymask) 、Linux では [sched_setaffinity](https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html) を使って実行コアを縛ってから `CPUID` を発行しています
 
 # 参考情報
 
