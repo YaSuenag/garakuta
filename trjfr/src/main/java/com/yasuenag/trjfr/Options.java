@@ -12,6 +12,8 @@ public class Options{
 
   private Path recordingFile = null;
 
+  private Path clippedFile = null;
+
   public Options(String[] args){
     if((args == null) || (args.length < 1)){
       throw new IllegalArgumentException("Argument is empty");
@@ -33,13 +35,22 @@ public class Options{
       else if(args[idx].startsWith("-")){
         throw new IllegalArgumentException("Unknown option: " + args[idx]);
       }
-      else{
+      else if(recordingFile == null){
         recordingFile = Path.of(args[idx]);
+      }
+      else if(clippedFile == null){
+        clippedFile = Path.of(args[idx]);
+      }
+      else{
+        throw new IllegalArgumentException("Too many arguments");
       }
     }
 
     if(recordingFile == null){
       throw new IllegalArgumentException("Recording file path is not specified");
+    }
+    if(clippedFile == null){
+      throw new IllegalArgumentException("Clipped file path is not specified");
     }
   }
 
@@ -54,4 +65,9 @@ public class Options{
   public Path recordingFile(){
     return recordingFile;
   }
+
+  public Path clippedFile(){
+    return clippedFile;
+  }
+
 }
