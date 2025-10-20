@@ -9,4 +9,4 @@ FROM openjdk:17-alpine
 COPY --from=builder /garakuta/NativeSEGV/build/NativeSEGV.jar \
                     /garakuta/NativeSEGV/build/libsegv.so /opt/
 CMD ["/opt/openjdk-17/bin/java", "-XX:+ErrorFileToStderr", \
-     "-Djava.library.path=/opt", "-jar", "/opt/NativeSEGV.jar"]
+     "-jar", "/opt/NativeSEGV.jar"]

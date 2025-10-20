@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.*;
 
 
 public class NativeSEGV{
@@ -8,7 +9,16 @@ public class NativeSEGV{
   private static native void doSEGVInLibC();
 
   static{
-    System.loadLibrary("segv");
+    var pattern = Pattern.compile("^file:(.+)NativeSEGV\\.jar!.+$");
+    var fileElement = NativeSEGV.class
+                                .getResource("NativeSEGV.class")
+                                .getFile();
+    var matcher = pattern.matcher(fileElement);
+    matcher.matches();
+    var libpath = matcher.group(1);
+    libpath += System.getProperty("os.name").equals("Linux") ? "libsegv.so" : "segv.dll";
+
+    System.load(libpath);
   }
 
   public static void main(String[] args) throws IOException{

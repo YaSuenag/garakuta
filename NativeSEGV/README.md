@@ -18,13 +18,13 @@ $ make
 ### JNI関数内でのSEGV
 
 ```
-$ java -Djava.library.path=. -jar NativeSEGV.jar
+$ java -jar NativeSEGV.jar
 ```
 
 ### libc関数内でのSEGV
 
 ```
-$ java -Djava.library.path=. -jar NativeSEGV.jar -l
+$ java -jar NativeSEGV.jar -l
 ```
 
 ### 任意のタイミングでクラッシュしたい場合
@@ -32,8 +32,8 @@ $ java -Djava.library.path=. -jar NativeSEGV.jar -l
 `-s` オプションを追加してください
 
 ```
-$ java -Djava.library.path=. -jar NativeSEGV.jar -s
-$ java -Djava.library.path=. -jar NativeSEGV.jar -l -s
+$ java -jar NativeSEGV.jar -s
+$ java -jar NativeSEGV.jar -l -s
 ```
 
 # Windowsの場合
