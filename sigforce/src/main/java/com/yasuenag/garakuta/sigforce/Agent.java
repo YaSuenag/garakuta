@@ -13,11 +13,16 @@ public class Agent implements ClassFileTransformer{
                           ProtectionDomain protectionDomain,
                           byte[] classfileBuffer)
                               throws IllegalClassFormatException{
-    return className.equals("sun.tools.attach.VirtualMachineImpl")
-        ? Transformer.transform(classfileBuffer) : null;
+    if(className.equals("sun/tools/attach/VirtualMachineImpl")){
+      System.out.println("sigforce: register transformer for " + className);
+      return Transformer.transform(classfileBuffer);
+    }
+
+    return null;
   }
 
   public static void premain(String agentArgs, Instrumentation inst){
+    System.out.println("sigforce: loaded");
     inst.addTransformer(new Agent());
   }
 
