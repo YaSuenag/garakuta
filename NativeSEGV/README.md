@@ -69,3 +69,16 @@ mvn exec:java
 
 > [!TIP]
 > クラッシュしたときのコアイメージなど `jhsdb jstack` でコールスタックを取得しようとすると、動的生成される Upcall 用スタブコードから下のコールスタックを取得できない可能性があります。この問題は [JDK-8339307](https://bugs.openjdk.org/browse/JDK-8339307) で修正されており、Java 24 から正式に織り込まれる予定です。
+
+# フレームレスな関数での SEGV
+
+コンパイラの最適化などによりフレームポインタが保存されないかつ DWARF も存在しない関数が生成されることがあります。 [frameless](frameless) ではそのような関数内で SEGV を起こします。
+
+> [!IMPORTANT]
+> frameless は Linux でのみ動作します。
+
+```
+cd frameless
+make
+java -Djava.library.path=. SegvInFrameless
+```
