@@ -29,3 +29,4 @@
 * [ハイブリッドアーキテクチャの CPU コアをチェックする](check-hybrid-cores)
 * [Attach API のシグナルハンドラチェックをキャンセルする JVMTI エージェント](sigforce)
 * [プロセッサコア、バス、TSC のクロックを調べてみる](freq)
+* [Java の `Math::min` / `Math::max` を `double` で叩きまくるベンチマーク](randminmax)
