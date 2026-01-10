@@ -82,3 +82,12 @@ cd frameless
 make
 java -Djava.library.path=. SegvInFrameless
 ```
+
+# FFM で呼び出した vDSO 内での SEGV
+
+FFM の例とほぼ同じですが、こちらは vDSO で提供される `gettimeofday(2)` に不正な引数を渡してクラッシュさせるものです。
+
+```
+cd ffm
+java SegvInGettimeofdayWithFFM.java
+```
