@@ -142,7 +142,7 @@ int main(){
   int maxleaf = get_max_leaf();
   printf("Max leaf: 0x%X\n", maxleaf);
 
-  if(hybrid && (maxleaf >= 0x1A)){
+  if(maxleaf >= 0x1A){
     for(int i = 0; i < cpus; i++){
       show_cpu_info(cpus, i);
     }
