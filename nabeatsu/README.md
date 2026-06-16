@@ -18,6 +18,8 @@
     * [nvcc](cuda/nvcc)
     * [Runtime Compilation](cuda/rtc)
     * [Runtime Compilation with Java Foreign Function & Memory API](cuda/java-rtc)
+* [C++ `std::for_each` 版](cpp-foreach-par)
+    * C++17 以降をサポートする C++ コンパイラ（GCC 16.1 で動作確認済み）
 
 # 実行方法
 
@@ -103,3 +105,7 @@ $ export JAVA_HOME
 $ mvn package
 $ $JAVA_HOME/bin/java -Djava.library.path=$CUDA_HOME/lib64:/usr/lib/wsl/lib -jar target/nabeatsu-rtc-0.1.2.jar [回数]
 ```
+
+# C++ `std::for_each` 版
+
+[cpp-foreach-par](cpp-foreach-par) で `make test` を実行してください。
