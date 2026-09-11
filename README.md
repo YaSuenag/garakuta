@@ -31,3 +31,4 @@
 * [プロセッサコア、バス、TSC のクロックを調べてみる](freq)
 * [Java の `Math::min` / `Math::max` を `double` で叩きまくるベンチマーク](randminmax)
 * [Java の String で表現した C 言語ソースコードを LLVM で JIT コンパイルして FFM で実行する](llvm-ffm)
+* [Foreign Function & Memory API で Memory Mapped I/O (MMIO) してみる](ffm-gpio)
