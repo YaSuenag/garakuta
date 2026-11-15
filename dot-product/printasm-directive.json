@@ -1,0 +1,12 @@
+[
+  {
+    "match": "com/yasuenag/presentation/jjugccc2026/Test.javaImpl",
+    "c2": {
+      "PrintAssembly": true
+    }
+  },
+  {
+    "match": "com/yasuenag/presentation/jjugccc2026/Test.jvmciImpl",
+    "PrintAssembly": true
+  }
+]
